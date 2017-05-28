@@ -1,0 +1,218 @@
+
+/// <reference types="d3" />
+/// <reference types="d3-selection" />
+
+import * as m from './index.js';
+
+declare module './index.js' {
+  interface TickFormat {
+    (domainValue: any, index: number): string;
+  }
+
+  interface PointData {
+    date: Date;
+    value: number;
+    x: number;
+    y: number;
+    interpolatedX: number;
+    interpolatedY: number;
+    interpolatedDate: Date;
+    interpolatedValue: number;
+    name: string;
+    color: string;
+  }
+
+  interface LineChartConfig {
+    width?: number;
+    height?: number;
+    margin?: {
+      top?: number,
+      right?: number,
+      bottom?: number,
+      left?: number
+    };
+    maxTimeRangeDifferenceToDraw?: number;
+    xAxisTimeFormat?: TickFormat;
+    yAxisValueFormat?: TickFormat;
+    curve: d3.CurveFactory;
+  }
+
+  interface LineChart {
+    (selection: any): void;
+
+    width: {
+      (width: number): LineChart;
+      (): number;
+    };
+
+    height: {
+      (height: number):LineChart;
+      (): number;
+    };
+
+    on: (event: string, callback: (...args: any[]) => void, ...args: any[]) => LineChart;
+
+    xAxisTimeFormat: {
+      (xAxisTimeFormat: TickFormat): LineChart;
+      (): TickFormat;
+    };
+
+    yAxisValueFormat: {
+      (yAxisValueFormat: TickFormat): LineChart;
+      (): TickFormat;
+    };
+
+    curve: {
+      (curve: d3.CurveFactory): LineChart;
+      (): d3.CurveFactory;
+    }
+
+    chartHeight: () => number;
+    chartWidth: () => number;
+  }
+
+  interface MarkersConfig {
+    cx?: (markerData: PointData) => number;
+    cy?: (markerData: PointData) => number;
+    radius?: (markerData: PointData) => number;
+    fill?: (markerData: PointData) => string;
+    stroke?: (markerData: PointData) => string;
+    strokeWidth?: (markerData: PointData) => number;
+    sort?: (markerData1: PointData, markerData2: PointData) => number;
+  }
+
+  interface Markers {
+    (selection: any): void;
+
+    remove: () => Markers;
+    show: ({ data }: { data: PointData[] }) => Markers;
+
+    cx: {
+      (cx: (markerData: PointData) => number): Markers;
+      (): (markerData: PointData) => number;
+    };
+
+    cy: {
+      (cy: (markerData: PointData) => number): Markers;
+      (): (markerData: PointData) => number;
+    };
+
+    radius: {
+      (radius: (markerData: PointData) => number): Markers;
+      (): (markerData: PointData) => number;
+    };
+
+    fill: {
+      (fill: (markerData: PointData) => string): Markers;
+      (): (markerData: PointData) => string;
+    };
+
+    stroke: {
+      (stroke: (markerData: PointData) => string): Markers;
+      (): (markerData: PointData) => string;
+    };
+
+    strokeWidth: {
+      (strokeWidth: (markerData: PointData) => number): Markers;
+      (): (markerData: PointData) => number;
+    };
+
+    sort: {
+      (sort: (markerData1: PointData, markerData2: PointData) => number): Markers;
+      (): (markerData1: PointData, markerData2: PointData) => number;
+    };
+  }
+
+  interface TooltipConfig {
+    chartHeight: number;
+    chartWidth: number;
+    tooltipWidth: number;
+    horizontalMouseMargin: number;
+    verticalBorderMargin: number;
+    headerFormatter: (selectedDate: Date, data: PointData[] ) => string;
+    topicFormatter: (data: PointData) => string;
+    valueFormatter: (data: PointData) => string;
+    sort: (markerData1: PointData, markerData2: PointData) => number;
+  }
+
+  interface Tooltip {
+    (selection: any): void;
+
+    remove: () => Tooltip;
+    show: ({ x, y, selectedDate, data }: { x: number, y: number, selectedDate: Date, data: PointData[]} ) => Tooltip;
+
+    chartHeight: {
+      (chartHeight: number): Tooltip;
+      (): number;
+    };
+
+    chartWidth: {
+      (chartWidth: number): Tooltip;
+      (): number;
+    };
+
+    tooltipWidth: {
+      (tooltipWidth: number): Tooltip;
+      (): number;
+    };
+
+    horizontalMouseMargin: {
+      (horizontalMouseMargin: number): Tooltip;
+      (): number;
+    };
+
+    verticalBorderMargin: {
+      (verticalBorderMargin: number): Tooltip;
+      (): number;
+    };
+
+    headerFormatter: {
+      (headerFormatter: (selectedDate: Date, data: PointData[] ) => string): Tooltip;
+      (): (selectedDate: Date, data: PointData[] ) => string;
+    };
+
+    topicFormatter: {
+      (topicFormatter: (data: PointData) => string): Tooltip;
+      (): (data: PointData) => string;
+    };
+
+    valueFormatter: {
+      (valueFormatter: (data: PointData) => string): Tooltip;
+      (): (data: PointData) => string;
+    };
+
+    sort: {
+      (sort: (markerData1: PointData, markerData2: PointData) => number): Tooltip;
+      (): (markerData1: PointData, markerData2: PointData) => number;
+    };
+  }
+
+  interface VerticalDividerConfig {
+    height: number;
+  }
+
+  interface VerticalDivider {
+    (selection: any): void;
+
+    remove: () => VerticalDivider;
+    show: () => VerticalDivider;
+    update: ({ x }: { x: number }) => VerticalDivider;
+
+    height: {
+      (height: number): VerticalDivider;
+      (): number;
+    }
+  }
+
+  export function line(config?: LineChartConfig): LineChart;
+  export const chartEvents: {
+    chartMouseEnter: string;
+    chartMouseLeave: string;
+    chartMouseMove: string;
+    chartMouseClick: string;
+  };
+
+  export function markers(config?: MarkersConfig): Markers;
+  export function tooltip(config?: TooltipConfig): Tooltip;
+  export function verticalDivider(config?: VerticalDividerConfig): VerticalDivider;
+}

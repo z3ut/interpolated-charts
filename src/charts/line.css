@@ -1,0 +1,15 @@
+.line-chart .horizontal-grid-line {
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke: #EFF2F5;
+  stroke-width: 1;
+  stroke-dasharray: 4, 4;
+}
+
+.line-chart .vertical-grid-line {
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke: #EFF2F5;
+  stroke-width: 1;
+  stroke-dasharray: 4, 4;
+}

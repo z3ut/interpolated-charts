@@ -1,0 +1,97 @@
+.line-chart .horizontal-grid-line {
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke: #EFF2F5;
+  stroke-width: 1;
+  stroke-dasharray: 4, 4;
+}
+
+.line-chart .vertical-grid-line {
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke: #EFF2F5;
+  stroke-width: 1;
+  stroke-dasharray: 4, 4;
+}
+.line-chart .tooltip {
+  fill: #FFF;
+}
+
+.line-chart .tooltip rect {
+  stroke: grey;
+  stroke-width: 1px;
+  rx: 0.32em;
+  ry: 0.32em;
+}
+
+.line-chart .circle {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border-radius: .5em;
+  line-height: 1em;
+}
+
+.line-chart .tooltip .topic {
+  line-height: 1em;
+  display: flex;
+  padding: .3em 0;
+}
+
+.line-chart .tooltip .topic-name {
+  line-height: 1em;
+  margin-left: .5em;
+}
+
+.line-chart .tooltip .topic-value {
+  line-height: 1em;
+  align-self: flex-start;
+  flex: 1;
+  text-align: right;
+}
+
+.line-chart .tooltip .foreign-object p {
+  margin: 0;
+  display: inline-block;
+  line-height: 1em;
+}
+
+.line-chart .tooltip .tooltip-container {
+  padding: .5em;
+}
+.line-chart .divider {
+  stroke: grey;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+@media (max-width: 1200px) {
+  .container {
+    max-width: 100%;
+  }
+}
+
+.chart-example {
+  padding: 1em;
+  text-align: center;
+}
+
+.chart-example .description {
+  text-align: center;
+}
+
+pre {
+  text-align: left;
+  margin: 0;
+  background-color: #EEE;
+  border: 1px solid grey;
+  padding: 1em;
+}
+
+.source-code {
+  max-width: 700px;
+  margin: auto;
+}
