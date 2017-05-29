@@ -9,10 +9,11 @@ import './index.css';
   const tooltipPlugin = tooltip();
 
   const lineChart = line()
-    .on(chartEvents.chartMouseEnter, (x, y) => {
+    // subscribe plugins to chart events
+    .on(chartEvents.chartMouseEnter, () => {
       verticalDividerPlugin.show();
     })
-    .on(chartEvents.chartMouseLeave, (x, y) => {
+    .on(chartEvents.chartMouseLeave, () => {
       verticalDividerPlugin.remove();
       markersPlugin.remove();
       tooltipPlugin.remove();
@@ -23,9 +24,11 @@ import './index.css';
       tooltipPlugin.show(options);
     });
 
+  // create chart with data
   const chartContainer = d3.select('.default-chart');
   chartContainer.datum(lineChartData).call(lineChart);
 
+  // bind plugins to chart
   const metadataContainer = d3.select('.default-chart .metadata-container');
   metadataContainer.datum([]).call(verticalDividerPlugin);
   metadataContainer.datum([]).call(markersPlugin);

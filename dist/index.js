@@ -298,11 +298,11 @@ function line() {
   }
 
   function mouseEnter() {
-    dispatcher.call(chartEvents.chartMouseEnter);
+    dispatcher.call.apply(dispatcher, [chartEvents.chartMouseEnter].concat(_toConsumableArray(d3.mouse(this))));
   }
 
   function mouseLeave() {
-    dispatcher.call(chartEvents.chartMouseLeave);
+    dispatcher.call.apply(dispatcher, [chartEvents.chartMouseLeave].concat(_toConsumableArray(d3.mouse(this))));
   }
 
   function getMouseEventOptions(x, y) {
@@ -403,8 +403,24 @@ function line() {
     return this;
   };
 
+  exports.margin = function (_margin) {
+    if (!arguments.length) {
+      return margin;
+    }
+    margin = _margin;
+    return this;
+  };
+
   exports.on = function () {
     dispatcher.on.apply(dispatcher, arguments);
+    return this;
+  };
+
+  exports.maxTimeRangeDifferenceToDraw = function (_maxTimeRangeDifferenceToDraw) {
+    if (!arguments.length) {
+      return maxTimeRangeDifferenceToDraw;
+    }
+    maxTimeRangeDifferenceToDraw = _maxTimeRangeDifferenceToDraw;
     return this;
   };
 
@@ -697,7 +713,7 @@ function tooltip() {
   function createToltipDiv(container, selectedDate, data) {
     var div = container.append('xhtml:div').append('div').classed('tooltip-container', true);
 
-    div.append('p').html(headerFormatter(selectedDate, data));
+    div.append('div').classed('tooltip-header', true).append('p').html(headerFormatter(selectedDate, data));
     div.append('hr');
 
     data.slice().sort(sort).reverse().forEach(function (d) {

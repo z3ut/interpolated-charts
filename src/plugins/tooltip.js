@@ -79,6 +79,8 @@ function tooltip({
       .classed('tooltip-container', true);
 
     div
+      .append('div')
+      .classed('tooltip-header', true)
       .append('p')
       .html(headerFormatter(selectedDate, data));
     div

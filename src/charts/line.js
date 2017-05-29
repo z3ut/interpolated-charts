@@ -246,11 +246,11 @@ function line({
   }
 
   function mouseEnter() {
-    dispatcher.call(chartEvents.chartMouseEnter);
+    dispatcher.call(chartEvents.chartMouseEnter, ...d3.mouse(this));
   }
 
   function mouseLeave() {
-    dispatcher.call(chartEvents.chartMouseLeave);
+    dispatcher.call(chartEvents.chartMouseLeave, ...d3.mouse(this));
   }
 
   function getMouseEventOptions(x, y) {
@@ -349,8 +349,24 @@ function line({
     return this;
   };
 
+  exports.margin = function(_margin) {
+    if (!arguments.length) {
+      return margin;
+    }
+    margin = _margin;
+    return this;
+  };
+
   exports.on = function() {
     dispatcher.on.apply(dispatcher, arguments);
+    return this;
+  };
+
+  exports.maxTimeRangeDifferenceToDraw = function(_maxTimeRangeDifferenceToDraw) {
+    if (!arguments.length) {
+      return maxTimeRangeDifferenceToDraw;
+    }
+    maxTimeRangeDifferenceToDraw = _maxTimeRangeDifferenceToDraw;
     return this;
   };
 

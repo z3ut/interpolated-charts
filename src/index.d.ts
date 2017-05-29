@@ -5,6 +5,25 @@
 import * as m from './index.js';
 
 declare module './index.js' {
+  interface PathDataSet {
+    name: string;
+    color?: string;
+    data: { date: Date, value: number }[];
+  }
+
+  interface ChartLinePointData {
+    date: Date;
+    value: number;
+    x: number;
+    y: number;
+    interpolatedX: number;
+    interpolatedY: number;
+    interpolatedDate: Date;
+    interpolatedValue: number;
+    name: string;
+    color: string;
+  }
+
   interface TickFormat {
     (domainValue: any, index: number): string;
   }
@@ -37,6 +56,19 @@ declare module './index.js' {
     curve: d3.CurveFactory;
   }
 
+  interface MouseEventChartData {
+    date: Date;
+    value: number;
+    x: number;
+    y: number;
+    interpolatedX: number;
+    interpolatedY: number;
+    interpolatedDate: Date;
+    interpolatedValue: number;
+    name: string;
+    color: string;
+  }
+
   interface LineChart {
     (selection: any): void;
 
@@ -50,7 +82,17 @@ declare module './index.js' {
       (): number;
     };
 
+    margin: {
+      (margin: { top: number, right: number, bottom: number, left: number }): LineChart;
+      (): { top: number, right: number, bottom: number, left: number };
+    };
+
     on: (event: string, callback: (...args: any[]) => void, ...args: any[]) => LineChart;
+
+    maxTimeRangeDifferenceToDraw: {
+      (maxTimeRangeDifferenceToDraw: number):LineChart;
+      (): number;
+    };
 
     xAxisTimeFormat: {
       (xAxisTimeFormat: TickFormat): LineChart;

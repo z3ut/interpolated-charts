@@ -9,7 +9,21 @@
   ry: 0.32em;
 }
 
-.line-chart .circle {
+.line-chart .tooltip .tooltip-container {
+  padding: .5em;
+}
+
+.line-chart .tooltip .tooltip-header {
+  text-align: center;
+}
+
+.line-chart .tooltip .tooltip-header p {
+  margin: 0;
+  display: inline-block;
+  line-height: 1em;
+}
+
+.line-chart .tooltip .circle {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -33,14 +47,4 @@
   align-self: flex-start;
   flex: 1;
   text-align: right;
-}
-
-.line-chart .tooltip .foreign-object p {
-  margin: 0;
-  display: inline-block;
-  line-height: 1em;
-}
-
-.line-chart .tooltip .tooltip-container {
-  padding: .5em;
 }
