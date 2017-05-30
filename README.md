@@ -171,7 +171,7 @@ chartHeight | Chart graph actual heigth getter. Total height - (margin.top + mar
 chartWidth | Chart graph actual width getter. Total width - (margin.left + margin.right | Number |
 interpolationMaxIterationCount | Interpolation cycle count. Computing will stop after N cycle or when Δx < accuracy **Important**: high value can slow preformance | Number | 50
 interpolationAccuracy | Interpolation Δx accuracy for searching y value on svg path. Computing will stop after N cycle or when Δx < accuracy | Number | 0.005
-mouseMoveTimeTreshold | Minimum time in milliseconds between chartMouseMove events | Number | 50
+mouseMoveTimeTreshold | Minimum time in milliseconds between chartMouseMove events | Number | 20
 
 ### Plugins
 

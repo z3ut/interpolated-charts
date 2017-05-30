@@ -17,7 +17,7 @@ function line({
     xAxisTimeFormat, yAxisValueFormat,
     curve = d3.curveBasis,
     interpolationMaxIterationCount = 25, interpolationAccuracy = 0.005,
-    mouseMoveTimeTreshold = 50
+    mouseMoveTimeTreshold = 20
   } = {}) {
 
   let svg;
@@ -32,6 +32,9 @@ function line({
   const dispatcher = d3.dispatch(chartEvents.chartMouseEnter,
     chartEvents.chartMouseLeave, chartEvents.chartMouseMove,
     chartEvents.chartMouseClick);
+
+  let previousMouseMoveEventTime;
+  let mouseMoveTimer;
 
   function exports(selection) {
     selection.each(function(data) {
@@ -237,16 +240,32 @@ function line({
     svg.on('click', mouseClick);
   }
 
-  let previousMouseMoveDate;
-
   function mouseMove() {
-    let currentDate = new Date().getTime();
-    if (previousMouseMoveDate && (currentDate - previousMouseMoveDate < mouseMoveTimeTreshold)) {
-      // last mousemove event was < mouseMoveTimeTreshold ms ago, no need to dispatch new
+    const currentDate = new Date().getTime();
+    const mouse = d3.mouse(this);
+
+    /*
+      if last mousemove event was < mouseMoveTimeTreshold ms ago,
+      start timeout for new event dispatch.
+      timeout will fire if no new mousemove event occurs.
+      use case - user moved and stopped mouse when mousemove event occured recently.
+      timeout will dispatch event after treshold time.
+    */
+    if (previousMouseMoveEventTime && (currentDate - previousMouseMoveEventTime < mouseMoveTimeTreshold)) {
+      if (mouseMoveTimer) {
+        clearTimeout(mouseMoveTimer);
+      }
+      mouseMoveTimer = setTimeout(
+        dispatchMouseMoveEvent.bind(this, mouse), mouseMoveTimeTreshold);
       return;
     }
-    previousMouseMoveDate = currentDate;
-    const options = getMouseEventOptions(...d3.mouse(this));
+
+    dispatchMouseMoveEvent.bind(this, mouse)();
+  }
+
+  function dispatchMouseMoveEvent(mouse) {
+    previousMouseMoveEventTime = new Date().getTime();
+    const options = getMouseEventOptions(...mouse);
     dispatcher.call(chartEvents.chartMouseMove, this, options);
   }
 
@@ -260,6 +279,9 @@ function line({
   }
 
   function mouseLeave() {
+    if (mouseMoveTimer) {
+      clearTimeout(mouseMoveTimer);
+    }
     dispatcher.call(chartEvents.chartMouseLeave, ...d3.mouse(this));
   }
 
