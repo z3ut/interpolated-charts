@@ -1,24 +1,34 @@
 
-function getYPointFromPath(path, x) {
+function getYPointFromPath(path, x, maxIterationCount, accuracy, approximateLength) {
   const bbox = path.getBBox();
 
   // x outside of path boundary
   if (x < bbox.x || bbox.x + bbox.width < x) {
-    return null;
+    return {};
   }
-
   let startLength = 0;
   let endLength = path.getTotalLength();
+
+  // set search range around approximated value
+  if (typeof approximateLength === 'number') {
+    const leftApproximationRange = approximateLength - 20;
+    const rightApproximationRange = approximateLength + 20;
+    if (path.getPointAtLength(leftApproximationRange).x < x) {
+      startLength = leftApproximationRange;
+    }
+    if (path.getPointAtLength(rightApproximationRange).x > x) {
+      endLength = rightApproximationRange;
+    }
+  }
+
+  let mediumLength = (startLength + endLength) / 2;
   let currentIteration = 0;
-  // lesser accuracy may affect correct positioning in line segments
-  const maxIterationCount = 50;
-  const accuracy = 0.001;
-  let point = path.getPointAtLength(endLength / 2);
+  let point = path.getPointAtLength(mediumLength);
 
   // binary search for close point to x
-  while (currentIteration < maxIterationCount || (point.x - x > accuracy)) {
-    point = path.getPointAtLength((startLength + endLength) / 2);
-    const mediumLength = (startLength + endLength) / 2;
+  while (currentIteration < maxIterationCount && (Math.abs(point.x - x) > accuracy)) {
+    mediumLength = (startLength + endLength) / 2;
+    point = path.getPointAtLength(mediumLength);
     if (point.x < x) {
       startLength = mediumLength;
     } else {
@@ -26,7 +36,8 @@ function getYPointFromPath(path, x) {
     }
     currentIteration++;
   }
-  return point.y;
+
+  return { y: point.y, pathLength: mediumLength };
 }
 
 export default getYPointFromPath;

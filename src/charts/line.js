@@ -15,7 +15,9 @@ function line({
     margin = { top: 20, right: 30, bottom: 40, left: 40 },
     maxTimeRangeDifferenceToDraw = 1000 * 60 * 60 * 24 * 1.5,
     xAxisTimeFormat, yAxisValueFormat,
-    curve = d3.curveBasis
+    curve = d3.curveBasis,
+    interpolationMaxIterationCount = 25, interpolationAccuracy = 0.005,
+    mouseMoveTimeTreshold = 50
   } = {}) {
 
   let svg;
@@ -235,7 +237,15 @@ function line({
     svg.on('click', mouseClick);
   }
 
+  let previousMouseMoveDate;
+
   function mouseMove() {
+    let currentDate = new Date().getTime();
+    if (previousMouseMoveDate && (currentDate - previousMouseMoveDate < mouseMoveTimeTreshold)) {
+      // last mousemove event was < mouseMoveTimeTreshold ms ago, no need to dispatch new
+      return;
+    }
+    previousMouseMoveDate = currentDate;
     const options = getMouseEventOptions(...d3.mouse(this));
     dispatcher.call(chartEvents.chartMouseMove, this, options);
   }
@@ -265,6 +275,8 @@ function line({
     return { x, y, selectedDate, data };
   }
 
+  let previousClosestPathes = {};
+
   function getClosestData(x) {
     const closestData = [];
     const selectedDate = xScale.invert(x);
@@ -283,7 +295,8 @@ function line({
           return;
         }
 
-        const y = getYPointFromPath(this, x);
+        const { y, pathLength } = getYPointFromPath(this, x, interpolationMaxIterationCount,
+          interpolationAccuracy, previousClosestPathes[data.name]);
         closesPoint.x = xScale(closesPoint.date);
         closesPoint.y = yScale(closesPoint.value);
         closesPoint.interpolatedX = x;
@@ -293,11 +306,16 @@ function line({
         closesPoint.name = data.name;
         closesPoint.color = data.color;
         closestData.push(closesPoint);
+        previousClosestPathes[data.name] = pathLength;
       });
+
     return closestData;
   }
 
   function getDiapasonsWithData(data) {
+    if (!Array.isArray(data) || !data.length) {
+      return [];
+    }
     const chartDiapasons = [];
     data.reduce((prev, curr) => {
       if (curr.date - prev.date < maxTimeRangeDifferenceToDraw) {
@@ -391,6 +409,30 @@ function line({
       return curve;
     }
     curve = _curve;
+    return this;
+  };
+  
+  exports.interpolationMaxIterationCount = function(_interpolationMaxIterationCount) {
+    if (!arguments.length) {
+      return interpolationMaxIterationCount;
+    }
+    interpolationMaxIterationCount = _interpolationMaxIterationCount;
+    return this;
+  };
+
+  exports.interpolationAccuracy = function(_interpolationAccuracy) {
+    if (!arguments.length) {
+      return interpolationAccuracy;
+    }
+    interpolationAccuracy = _interpolationAccuracy;
+    return this;
+  };
+
+  exports.mouseMoveTimeTreshold = function(_mouseMoveTimeTreshold) {
+    if (!arguments.length) {
+      return mouseMoveTimeTreshold;
+    }
+    mouseMoveTimeTreshold = _mouseMoveTimeTreshold;
     return this;
   };
 

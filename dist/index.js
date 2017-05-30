@@ -120,7 +120,13 @@ function line() {
       xAxisTimeFormat = _ref.xAxisTimeFormat,
       yAxisValueFormat = _ref.yAxisValueFormat,
       _ref$curve = _ref.curve,
-      curve = _ref$curve === undefined ? d3.curveBasis : _ref$curve;
+      curve = _ref$curve === undefined ? d3.curveBasis : _ref$curve,
+      _ref$interpolationMax = _ref.interpolationMaxIterationCount,
+      interpolationMaxIterationCount = _ref$interpolationMax === undefined ? 25 : _ref$interpolationMax,
+      _ref$interpolationAcc = _ref.interpolationAccuracy,
+      interpolationAccuracy = _ref$interpolationAcc === undefined ? 0.005 : _ref$interpolationAcc,
+      _ref$mouseMoveTimeTre = _ref.mouseMoveTimeTreshold,
+      mouseMoveTimeTreshold = _ref$mouseMoveTimeTre === undefined ? 50 : _ref$mouseMoveTimeTre;
 
   var svg = void 0;
   var chartWidth = void 0,
@@ -287,7 +293,15 @@ function line() {
     svg.on('click', mouseClick);
   }
 
+  var previousMouseMoveDate = void 0;
+
   function mouseMove() {
+    var currentDate = new Date().getTime();
+    if (previousMouseMoveDate && currentDate - previousMouseMoveDate < mouseMoveTimeTreshold) {
+      // last mousemove event was < mouseMoveTimeTreshold ms ago, no need to dispatch new
+      return;
+    }
+    previousMouseMoveDate = currentDate;
     var options = getMouseEventOptions.apply(undefined, _toConsumableArray(d3.mouse(this)));
     dispatcher.call(chartEvents.chartMouseMove, this, options);
   }
@@ -319,6 +333,8 @@ function line() {
     return { x: x, y: y, selectedDate: selectedDate, data: data };
   }
 
+  var previousClosestPathes = {};
+
   function getClosestData(x) {
     var closestData = [];
     var selectedDate = xScale.invert(x);
@@ -335,7 +351,10 @@ function line() {
         return;
       }
 
-      var y = (0, _svgCalculating2.default)(this, x);
+      var _getYPointFromPath = (0, _svgCalculating2.default)(this, x, interpolationMaxIterationCount, interpolationAccuracy, previousClosestPathes[data.name]),
+          y = _getYPointFromPath.y,
+          pathLength = _getYPointFromPath.pathLength;
+
       closesPoint.x = xScale(closesPoint.date);
       closesPoint.y = yScale(closesPoint.value);
       closesPoint.interpolatedX = x;
@@ -345,11 +364,16 @@ function line() {
       closesPoint.name = data.name;
       closesPoint.color = data.color;
       closestData.push(closesPoint);
+      previousClosestPathes[data.name] = pathLength;
     });
+
     return closestData;
   }
 
   function getDiapasonsWithData(data) {
+    if (!Array.isArray(data) || !data.length) {
+      return [];
+    }
     var chartDiapasons = [];
     data.reduce(function (prev, curr) {
       if (curr.date - prev.date < maxTimeRangeDifferenceToDraw) {
@@ -445,6 +469,30 @@ function line() {
       return curve;
     }
     curve = _curve;
+    return this;
+  };
+
+  exports.interpolationMaxIterationCount = function (_interpolationMaxIterationCount) {
+    if (!arguments.length) {
+      return interpolationMaxIterationCount;
+    }
+    interpolationMaxIterationCount = _interpolationMaxIterationCount;
+    return this;
+  };
+
+  exports.interpolationAccuracy = function (_interpolationAccuracy) {
+    if (!arguments.length) {
+      return interpolationAccuracy;
+    }
+    interpolationAccuracy = _interpolationAccuracy;
+    return this;
+  };
+
+  exports.mouseMoveTimeTreshold = function (_mouseMoveTimeTreshold) {
+    if (!arguments.length) {
+      return mouseMoveTimeTreshold;
+    }
+    mouseMoveTimeTreshold = _mouseMoveTimeTreshold;
     return this;
   };
 
@@ -973,26 +1021,36 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-function getYPointFromPath(path, x) {
+function getYPointFromPath(path, x, maxIterationCount, accuracy, approximateLength) {
   var bbox = path.getBBox();
 
   // x outside of path boundary
   if (x < bbox.x || bbox.x + bbox.width < x) {
-    return null;
+    return {};
   }
-
   var startLength = 0;
   var endLength = path.getTotalLength();
+
+  // set search range around approximated value
+  if (typeof approximateLength === 'number') {
+    var leftApproximationRange = approximateLength - 20;
+    var rightApproximationRange = approximateLength + 20;
+    if (path.getPointAtLength(leftApproximationRange).x < x) {
+      startLength = leftApproximationRange;
+    }
+    if (path.getPointAtLength(rightApproximationRange).x > x) {
+      endLength = rightApproximationRange;
+    }
+  }
+
+  var mediumLength = (startLength + endLength) / 2;
   var currentIteration = 0;
-  // lesser accuracy may affect correct positioning in line segments
-  var maxIterationCount = 50;
-  var accuracy = 0.001;
-  var point = path.getPointAtLength(endLength / 2);
+  var point = path.getPointAtLength(mediumLength);
 
   // binary search for close point to x
-  while (currentIteration < maxIterationCount || point.x - x > accuracy) {
-    point = path.getPointAtLength((startLength + endLength) / 2);
-    var mediumLength = (startLength + endLength) / 2;
+  while (currentIteration < maxIterationCount && Math.abs(point.x - x) > accuracy) {
+    mediumLength = (startLength + endLength) / 2;
+    point = path.getPointAtLength(mediumLength);
     if (point.x < x) {
       startLength = mediumLength;
     } else {
@@ -1000,7 +1058,8 @@ function getYPointFromPath(path, x) {
     }
     currentIteration++;
   }
-  return point.y;
+
+  return { y: point.y, pathLength: mediumLength };
 }
 
 exports.default = getYPointFromPath;

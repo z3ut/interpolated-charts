@@ -4,7 +4,7 @@ Configurable [d3 v4](https://github.com/d3/d3) charts with interpolation and mis
 
 [Live demo](https://z3ut.github.io/interpolated-charts)
 
-![default-interpolated-chart](./img/default-interpolated-chart.png)
+![default-interpolated-chart](https://raw.githubusercontent.com/z3ut/interpolated-charts/master/img/default-interpolated-chart.png)
 
 ## Description
 
@@ -128,7 +128,7 @@ chartEvents.chartMouseEnter - mouse entered chart boundary. Arguments - mouse co
 
 chartEvents.chartMouseLeave - mouse leaved chart boundary. Arguments - mouse coordinates x, y relative to chart;
 
-chartEvents.chartMouseMove - mouse moved inside chart boundary. Arguments - { x: number, y: number, selectedDate: Date, data: ChartLinePointData[] }. data - array of closest chart points data based on mouse current position:
+chartEvents.chartMouseMove - mouse moved inside chart boundary. Event treshhold (mouseMoveTimeTreshold, ms) - min time between events. Arguments - { x: number, y: number, selectedDate: Date, data: ChartLinePointData[] }. data - array of closest chart points data based on mouse current position:
 
 ```typescript
 interface ChartLinePointData {
@@ -169,6 +169,9 @@ yAxisValueFormat | Value tick format for chart Y Axis | d3.tickFormat | null
 curve | Curve type for line interpolation. **Important**: value interpolation compute on chart resulted line and depend on this config value | d3.curve | d3.curveBasis
 chartHeight | Chart graph actual heigth getter. Total height - (margin.top + margin.bottom) | Number |
 chartWidth | Chart graph actual width getter. Total width - (margin.left + margin.right | Number |
+interpolationMaxIterationCount | Interpolation cycle count. Computing will stop after N cycle or when Δx < accuracy **Important**: high value can slow preformance | Number | 50
+interpolationAccuracy | Interpolation Δx accuracy for searching y value on svg path. Computing will stop after N cycle or when Δx < accuracy | Number | 0.005
+mouseMoveTimeTreshold | Minimum time in milliseconds between chartMouseMove events | Number | 50
 
 ### Plugins
 

@@ -53,7 +53,10 @@ declare module './index.js' {
     maxTimeRangeDifferenceToDraw?: number;
     xAxisTimeFormat?: TickFormat;
     yAxisValueFormat?: TickFormat;
-    curve: d3.CurveFactory;
+    curve?: d3.CurveFactory;
+    interpolationMaxIterationCount?: number;
+    interpolationAccuracy?: number;
+    mouseMoveTimeTreshold?: number;
   }
 
   interface MouseEventChartData {
@@ -107,6 +110,21 @@ declare module './index.js' {
     curve: {
       (curve: d3.CurveFactory): LineChart;
       (): d3.CurveFactory;
+    }
+
+    interpolationMaxIterationCount: {
+      (interpolationMaxIterationCount: number): LineChart;
+      (): number;
+    }
+
+    interpolationAccuracy: {
+      (interpolationAccuracy: number): LineChart;
+      (): number;
+    }
+
+    mouseMoveTimeTreshold: {
+      (mouseMoveTimeTreshold: number): LineChart;
+      (): number;
     }
 
     chartHeight: () => number;
