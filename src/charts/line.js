@@ -260,7 +260,7 @@ function line({
       return;
     }
 
-    dispatchMouseMoveEvent.bind(this, mouse)();
+    dispatchMouseMoveEvent.call(this, mouse);
   }
 
   function dispatchMouseMoveEvent(mouse) {
