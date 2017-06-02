@@ -68,10 +68,10 @@ import './index.css';
     .yAxisValueFormat(value => `${value}°C`)
     .xAxisTimeFormat(d3.timeFormat('%d-%m %H'))
     .curve(d3.curveCatmullRom)
-    .on(chartEvents.chartMouseEnter, (x, y) => {
+    .on(chartEvents.chartMouseEnter, () => {
       verticalDividerPlugin.show();
     })
-    .on(chartEvents.chartMouseLeave, (x, y) => {
+    .on(chartEvents.chartMouseLeave, () => {
       verticalDividerPlugin.remove();
       markersPlugin.remove();
       tooltipPlugin.remove();
@@ -81,7 +81,7 @@ import './index.css';
       markersPlugin.show(options);
       tooltipPlugin.show(options);
     })
-    .on(chartEvents.chartMouseClick, (options) => {
+    .on(chartEvents.chartMouseClick, () => {
 
     });
 

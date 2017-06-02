@@ -7,7 +7,7 @@ function verticalDivider({
   let svg;
 
   function exports(selection) {
-    selection.each(function(data) {
+    selection.each(function() {
       buildSvg(this);
     });
   }

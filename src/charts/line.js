@@ -297,7 +297,7 @@ function line({
     return { x, y, selectedDate, data };
   }
 
-  let previousClosestPathes = {};
+  const previousClosestPathes = {};
 
   function getClosestData(x) {
     const closestData = [];

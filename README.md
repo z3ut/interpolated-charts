@@ -4,7 +4,7 @@ Configurable [d3 v4](https://github.com/d3/d3) charts with interpolation and mis
 
 [Live demo](https://z3ut.github.io/interpolated-charts)
 
-![default-interpolated-chart](https://raw.githubusercontent.com/z3ut/interpolated-charts/master/img/default-interpolated-chart.png)
+![default-interpolated-chart](https://raw.githubusercontent.com/z3ut/interpolated-charts/master/img/default-interpolated-chart.gif)
 
 ## Description
 
@@ -340,7 +340,7 @@ show | Show tooltip | { x: number, y: number, selectedDate: Date, data: ChartLin
 
 ## TODO
 
-- [ ] Tests
+- [x] Tests
 - [ ] JSDoc
 - [x] Documentation
 - [ ] Display curve single points in missing data range and add them to tooltip

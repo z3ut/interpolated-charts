@@ -3,16 +3,16 @@ import * as d3 from 'd3';
 function tooltip({
     chartHeight = 440, chartWidth = 700, tooltipWidth = 220,
     horizontalMouseMargin = 40, verticalBorderMargin = 10,
-    headerFormatter = (selectedDate, data) => d3.timeFormat('%Y-%d-%m %H:%M:%S')(selectedDate),
-    topicFormatter = (data) => data.name,
-    valueFormatter = (data) => d3.format('.1f')(data.interpolatedValue),
-    sort = (a, b) => 0
+    headerFormatter = selectedDate => d3.timeFormat('%Y-%d-%m %H:%M:%S')(selectedDate),
+    topicFormatter = data => data.name,
+    valueFormatter = data => d3.format('.1f')(data.interpolatedValue),
+    sort = () => 0
   } = {}) {
 
   let svg;
 
   function exports(selection) {
-    selection.each(function(data) {
+    selection.each(function() {
       buildSvg(this);
     });
   }

@@ -3,17 +3,17 @@ import * as d3 from 'd3';
 function markers({
     cx = data => data.interpolatedX || data.x,
     cy = data => data.interpolatedY || data.y,
-    radius = data => 5,
-    fill = data => 'white',
+    radius = () => 5,
+    fill = () => 'white',
     stroke = data => data.color || 'red',
-    strokeWidth = data => 2,
-    sort = (a, b) => 0
+    strokeWidth = () => 2,
+    sort = () => 0
   } = {}) {
 
   let svg;
 
   function exports(selection) {
-    selection.each(function(data) {
+    selection.each(function() {
       buildSvg(this);
     });
   }
