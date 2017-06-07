@@ -184,15 +184,15 @@ declare module './index.js' {
   }
 
   interface TooltipConfig {
-    chartHeight: number;
-    chartWidth: number;
-    tooltipWidth: number;
-    horizontalMouseMargin: number;
-    verticalBorderMargin: number;
-    headerFormatter: (selectedDate: Date, data: PointData[] ) => string;
-    topicFormatter: (data: PointData) => string;
-    valueFormatter: (data: PointData) => string;
-    sort: (markerData1: PointData, markerData2: PointData) => number;
+    chartHeight?: number;
+    chartWidth?: number;
+    tooltipWidth?: number;
+    horizontalMouseMargin?: number;
+    verticalBorderMargin?: number;
+    headerFormatter?: (selectedDate: Date, data: PointData[] ) => string;
+    topicFormatter?: (data: PointData) => string;
+    valueFormatter?: (data: PointData) => string;
+    sort?: (markerData1: PointData, markerData2: PointData) => number;
   }
 
   interface Tooltip {
@@ -248,7 +248,7 @@ declare module './index.js' {
   }
 
   interface VerticalDividerConfig {
-    height: number;
+    height?: number;
   }
 
   interface VerticalDivider {
