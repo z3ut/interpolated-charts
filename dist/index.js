@@ -1,4 +1,14 @@
-/******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory(require("d3"));
+	else if(typeof define === 'function' && define.amd)
+		define(["d3"], factory);
+	else if(typeof exports === 'object')
+		exports["interpolated-charts"] = factory(require("d3"));
+	else
+		root["interpolated-charts"] = factory(root["d3"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_0__) {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -70,7 +80,7 @@
 /* 0 */
 /***/ (function(module, exports) {
 
-module.exports = d3;
+module.exports = __WEBPACK_EXTERNAL_MODULE_0__;
 
 /***/ }),
 /* 1 */
@@ -315,7 +325,7 @@ function line() {
       return;
     }
 
-    dispatchMouseMoveEvent.bind(this, mouse)();
+    dispatchMouseMoveEvent.call(this, mouse);
   }
 
   function dispatchMouseMoveEvent(mouse) {
@@ -559,11 +569,11 @@ function markers() {
     return data.interpolatedY || data.y;
   } : _ref$cy,
       _ref$radius = _ref.radius,
-      radius = _ref$radius === undefined ? function (data) {
+      radius = _ref$radius === undefined ? function () {
     return 5;
   } : _ref$radius,
       _ref$fill = _ref.fill,
-      fill = _ref$fill === undefined ? function (data) {
+      fill = _ref$fill === undefined ? function () {
     return 'white';
   } : _ref$fill,
       _ref$stroke = _ref.stroke,
@@ -571,18 +581,18 @@ function markers() {
     return data.color || 'red';
   } : _ref$stroke,
       _ref$strokeWidth = _ref.strokeWidth,
-      strokeWidth = _ref$strokeWidth === undefined ? function (data) {
+      strokeWidth = _ref$strokeWidth === undefined ? function () {
     return 2;
   } : _ref$strokeWidth,
       _ref$sort = _ref.sort,
-      sort = _ref$sort === undefined ? function (a, b) {
+      sort = _ref$sort === undefined ? function () {
     return 0;
   } : _ref$sort;
 
   var svg = void 0;
 
   function exports(selection) {
-    selection.each(function (data) {
+    selection.each(function () {
       buildSvg(this);
     });
   }
@@ -716,7 +726,7 @@ function tooltip() {
       _ref$verticalBorderMa = _ref.verticalBorderMargin,
       verticalBorderMargin = _ref$verticalBorderMa === undefined ? 10 : _ref$verticalBorderMa,
       _ref$headerFormatter = _ref.headerFormatter,
-      headerFormatter = _ref$headerFormatter === undefined ? function (selectedDate, data) {
+      headerFormatter = _ref$headerFormatter === undefined ? function (selectedDate) {
     return d3.timeFormat('%Y-%d-%m %H:%M:%S')(selectedDate);
   } : _ref$headerFormatter,
       _ref$topicFormatter = _ref.topicFormatter,
@@ -728,14 +738,14 @@ function tooltip() {
     return d3.format('.1f')(data.interpolatedValue);
   } : _ref$valueFormatter,
       _ref$sort = _ref.sort,
-      sort = _ref$sort === undefined ? function (a, b) {
+      sort = _ref$sort === undefined ? function () {
     return 0;
   } : _ref$sort;
 
   var svg = void 0;
 
   function exports(selection) {
-    selection.each(function (data) {
+    selection.each(function () {
       buildSvg(this);
     });
   }
@@ -905,7 +915,7 @@ function verticalDivider() {
   var svg = void 0;
 
   function exports(selection) {
-    selection.each(function (data) {
+    selection.each(function () {
       buildSvg(this);
     });
   }
@@ -1087,3 +1097,4 @@ exports.default = getYPointFromPath;
 
 /***/ })
 /******/ ]);
+});

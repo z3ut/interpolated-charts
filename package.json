@@ -7,7 +7,7 @@
     "chart",
     "interpolation"
   ],
-  "main": "src/index.js",
+  "main": "dist/index.min.js",
   "types": "src/index.d.ts",
   "scripts": {
     "dev": "node_modules/.bin/webpack-dev-server --config ./build/webpack.dev.config.js --hot --inline",
