@@ -58,7 +58,7 @@ function line({
 
   function initializeChartData(data) {
     chartData = data.map(d => {
-      d.color = d.color || colors.getNextColor();
+      d.color = d.color || colors.next().value;
       d.segregatedData = getSegregatedData(d.data);
       d.chartDiapasons = getDiapasonsWithData(d.data);
       return d;
