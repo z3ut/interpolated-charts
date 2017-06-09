@@ -2,6 +2,10 @@
 
 Configurable [d3 v4](https://github.com/d3/d3) charts with interpolation and missing data range. Inspired by [Britecharts](https://github.com/eventbrite/britecharts)
 
+Angular component [here](https://github.com/z3ut/ng-interpolated-charts)
+
+[![npm version](https://badge.fury.io/js/interpolated-charts.svg)](https://badge.fury.io/js/interpolated-charts)
+
 [Live demo](https://z3ut.github.io/interpolated-charts)
 
 ![default-interpolated-chart](https://raw.githubusercontent.com/z3ut/interpolated-charts/master/img/default-interpolated-chart.gif)
