@@ -6,8 +6,8 @@ var vendorsPath = path.resolve('./node_modules');
 
 module.exports = merge(baseWebpackConfig, {
   entry: {
-    'index': ['babel-polyfill', './src/index.js'],
-    'index.min': ['babel-polyfill', './src/index.js']
+    'index': './src/index.js',
+    'index.min': './src/index.js'
   },
   output: {
     filename: '[name].js',
