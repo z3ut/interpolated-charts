@@ -5,6 +5,12 @@
 import * as m from './index.js';
 
 declare module './index.js' {
+  interface TickFormat {
+    (domainValue: any, index: number): string;
+  }
+
+  /* Line chart */
+
   interface PathDataSet {
     name: string;
     color?: string;
@@ -22,10 +28,6 @@ declare module './index.js' {
     interpolatedValue: number;
     name: string;
     color: string;
-  }
-
-  interface TickFormat {
-    (domainValue: any, index: number): string;
   }
 
   interface PointData {
@@ -81,7 +83,7 @@ declare module './index.js' {
     };
 
     height: {
-      (height: number):LineChart;
+      (height: number): LineChart;
       (): number;
     };
 
@@ -93,7 +95,7 @@ declare module './index.js' {
     on: (event: string, callback: (...args: any[]) => void, ...args: any[]) => LineChart;
 
     maxTimeRangeDifferenceToDraw: {
-      (maxTimeRangeDifferenceToDraw: number):LineChart;
+      (maxTimeRangeDifferenceToDraw: number): LineChart;
       (): number;
     };
 
@@ -130,6 +132,73 @@ declare module './index.js' {
     chartHeight: () => number;
     chartWidth: () => number;
   }
+
+  /* Stack chart */
+
+  interface StackBarData {
+    name: string;
+    color?: string;
+    date: Date;
+    value?: number;
+  }
+
+  interface StackBarConfig {
+    width?: number;
+    height?: number;
+    margin?: {
+      top?: number,
+      right?: number,
+      bottom?: number,
+      left?: number
+    };
+    backgroundColor?: string;
+    maxTimeRangeDifferenceToDraw?: number;
+    xAxisTimeFormat?: TickFormat;
+    mouseMoveTimeTreshold?: number;
+  }
+  
+  interface StackBar {
+    (selection: any): void;
+
+    width: {
+      (width: number): StackBar;
+      (): number;
+    };
+
+    height: {
+      (height: number): StackBar;
+      (): number;
+    };
+
+    margin: {
+      (margin: { top: number, right: number, bottom: number, left: number }): StackBar;
+      (): { top: number, right: number, bottom: number, left: number };
+    };
+
+    backgroundColor: {
+      (backgroundColor: string): StackBar;
+      (): string;
+    };
+
+    on: (event: string, callback: (...args: any[]) => void, ...args: any[]) => StackBar;
+
+    maxTimeRangeDifferenceToDraw: {
+      (maxTimeRangeDifferenceToDraw: number): StackBar;
+      (): number;
+    };
+
+    xAxisTimeFormat: {
+      (xAxisTimeFormat: TickFormat): StackBar;
+      (): TickFormat;
+    };
+
+    mouseMoveTimeTreshold: {
+      (mouseMoveTimeTreshold: number): StackBar;
+      (): number;
+    }
+  }
+
+  /* Plugins */
 
   interface MarkersConfig {
     cx?: (markerData: PointData) => number;
@@ -227,8 +296,8 @@ declare module './index.js' {
     };
 
     headerFormatter: {
-      (headerFormatter: (selectedDate: Date, data: PointData[] ) => string): Tooltip;
-      (): (selectedDate: Date, data: PointData[] ) => string;
+      (headerFormatter: (selectedDate: Date, data: PointData[]) => string): Tooltip;
+      (): (selectedDate: Date, data: PointData[]) => string;
     };
 
     topicFormatter: {
@@ -265,6 +334,8 @@ declare module './index.js' {
   }
 
   export function line(config?: LineChartConfig): LineChart;
+  export function stack(config?: StackBarConfig): StackBar;
+
   export const chartEvents: {
     chartMouseEnter: string;
     chartMouseLeave: string;

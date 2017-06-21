@@ -1,5 +1,5 @@
 import { verticalDivider } from '../../src/index.js';
-import { mouseEventData } from '../data/mouse-event-data.js';
+import { mouseEventData } from '../data/mouse-event.js';
 import * as d3 from 'd3';
 
 describe('tooltip', () => {

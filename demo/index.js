@@ -1,8 +1,10 @@
 import * as d3 from 'd3';
-import { line, chartEvents, verticalDivider, markers, tooltip } from '../src/index.js';
+import { line, stackBar, chartEvents, verticalDivider, markers, tooltip } from '../src/index.js';
 import { lineChartData } from '../test/data/line-chart';
+import { stackBarData } from '../test/data/stack-bar';
 import './index.css';
 
+// default line chart
 (() => {
   const verticalDividerPlugin = verticalDivider();
   const markersPlugin = markers();
@@ -35,6 +37,7 @@ import './index.css';
   metadataContainer.datum([]).call(tooltipPlugin);
 })();
 
+// configurated line chart
 (() => {
   const verticalDividerPlugin = verticalDivider();
   const markersPlugin = markers()
@@ -98,5 +101,39 @@ import './index.css';
   const metadataContainer = d3.select('.configured-chart .metadata-container');
   metadataContainer.datum([]).call(verticalDividerPlugin);
   metadataContainer.datum([]).call(markersPlugin);
+  metadataContainer.datum([]).call(tooltipPlugin);
+})();
+
+// stack bar
+(() => {
+  const chartHeight = 60;
+
+  const verticalDividerPlugin = verticalDivider()
+    .height(chartHeight);
+  const tooltipPlugin = tooltip({
+    chartHeight: 60,
+    verticalBorderMargin: -10,
+    topicFormatter: data => data.name,
+    valueFormatter: () => ''
+  })
+
+  const stackBarChart = stackBar()
+    .on(chartEvents.chartMouseEnter, () => {
+      verticalDividerPlugin.show();
+    })
+    .on(chartEvents.chartMouseLeave, () => {
+      verticalDividerPlugin.remove();
+      tooltipPlugin.remove();
+    })
+    .on(chartEvents.chartMouseMove, (options) => {
+      verticalDividerPlugin.update(options);
+      tooltipPlugin.show(options);
+    });
+
+  const chartContainer = d3.select('.stack-bar');
+  chartContainer.datum(stackBarData).call(stackBarChart);
+
+  const metadataContainer = d3.select('.stack-bar .metadata-container');
+  metadataContainer.datum([]).call(verticalDividerPlugin);
   metadataContainer.datum([]).call(tooltipPlugin);
 })();

@@ -177,6 +177,52 @@ interpolationMaxIterationCount | Interpolation cycle count. Computing will stop 
 interpolationAccuracy | Interpolation Δx accuracy for searching y value on svg path. Computing will stop after N cycle or when Δx < accuracy | Number | 0.005
 mouseMoveTimeTreshold | Minimum time in milliseconds between chartMouseMove events | Number | 20
 
+### Stack chart
+
+#### Usage
+
+```javascript
+// create stack bar
+const stackBarChart = stackBar();
+
+const stackBarContainer = d3.select('.stack-bar');
+const stackBarData = [/* StackBarData[] */];
+// bind selection with data and call chart creation
+stackBarContainer.datum(stackBarData).call(stackBarChart);
+```
+
+#### Chart data format
+Array of
+```typescript
+interface StackBarData {
+  name: string;
+  color?: string;
+  date: Date;
+  value?: number;
+}
+```
+
+#### Events
+
+chartEvents.chartMouseEnter - mouse entered chart boundary. Arguments - mouse coordinates x, y relative to chart;
+
+chartEvents.chartMouseLeave - mouse leaved chart boundary. Arguments - mouse coordinates x, y relative to chart;
+
+chartEvents.chartMouseMove - mouse moved inside chart boundary. Event treshhold (mouseMoveTimeTreshold, ms) - min time between events. Arguments - { x: number, y: number, selectedDate: Date, data: StackData[] }. data - array of closest chart points data based on mouse current position:
+
+chartEvents.chartMouseClick - mouse click inside chart boundary. Arguments - { x: number, y: number, selectedDate: Date, data: StackData[] }.
+
+#### Options
+
+Name | Description | Type | Default
+--- | --- | --- | ---
+width | Chart total width | Number | 700
+height | Chart total height | Number | 500
+margin | Chart graph margin to outer bounds | { top: number, right: number, 
+backgroundColor | Chart background color | String | '#CCC'
+maxTimeRangeDifferenceToDraw | Max time in milliseconds to treat dataset xAxisTimeFormat | Date tick format for chart X Axis | d3.tickFormat | null
+mouseMoveTimeTreshold | Minimum time in milliseconds between chartMouseMove events | Number | 20
+
 ### Plugins
 
 #### Vertical divider
