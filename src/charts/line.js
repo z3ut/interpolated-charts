@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 
 import { colorProvider } from '../utils/color-provider';
 import getYPointFromPath from '../utils/svg-calculating';
+import eventThreshold from '../utils/event-threshold';
 
 const chartEvents = {
   chartMouseEnter: 'chartMouseEnter',
@@ -28,13 +29,11 @@ function line({
   let chartData;
 
   const colors = colorProvider();
+  let events = eventThreshold(mouseMoveTimeTreshold);
 
   const dispatcher = d3.dispatch(chartEvents.chartMouseEnter,
     chartEvents.chartMouseLeave, chartEvents.chartMouseMove,
     chartEvents.chartMouseClick);
-
-  let previousMouseMoveEventTime;
-  let mouseMoveTimer;
 
   function exports(selection) {
     selection.each(function(data) {
@@ -241,30 +240,11 @@ function line({
   }
 
   function mouseMove() {
-    const currentDate = new Date().getTime();
     const mouse = d3.mouse(this);
-
-    /*
-      if last mousemove event was < mouseMoveTimeTreshold ms ago,
-      start timeout for new event dispatch.
-      timeout will fire if no new mousemove event occurs.
-      use case - user moved and stopped mouse when mousemove event occured recently.
-      timeout will dispatch event after treshold time.
-    */
-    if (previousMouseMoveEventTime && (currentDate - previousMouseMoveEventTime < mouseMoveTimeTreshold)) {
-      if (mouseMoveTimer) {
-        clearTimeout(mouseMoveTimer);
-      }
-      mouseMoveTimer = setTimeout(
-        dispatchMouseMoveEvent.bind(this, mouse), mouseMoveTimeTreshold);
-      return;
-    }
-
-    dispatchMouseMoveEvent.call(this, mouse);
+    events.call(dispatchMouseMoveEvent.bind(this, mouse));
   }
 
   function dispatchMouseMoveEvent(mouse) {
-    previousMouseMoveEventTime = new Date().getTime();
     const options = getMouseEventOptions(...mouse);
     dispatcher.call(chartEvents.chartMouseMove, this, options);
   }
@@ -279,9 +259,7 @@ function line({
   }
 
   function mouseLeave() {
-    if (mouseMoveTimer) {
-      clearTimeout(mouseMoveTimer);
-    }
+    events.clear();
     dispatcher.call(chartEvents.chartMouseLeave, ...d3.mouse(this));
   }
 
@@ -455,6 +433,9 @@ function line({
       return mouseMoveTimeTreshold;
     }
     mouseMoveTimeTreshold = _mouseMoveTimeTreshold;
+
+    events.clear();
+    events = eventThreshold(mouseMoveTimeTreshold);
     return this;
   };
 
