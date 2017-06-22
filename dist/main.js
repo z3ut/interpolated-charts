@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 9);
+/******/ 	return __webpack_require__(__webpack_require__.s = 14);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1488,6 +1488,194 @@ function getYPointFromPath(path, x, maxIterationCount, accuracy, approximateLeng
 }
 
 exports.default = getYPointFromPath;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var lineChartData = exports.lineChartData = [{
+  name: 'Minsk',
+  color: 'darkblue',
+  data: [{ date: new Date('2015-01-01T00:00:00'), value: 20 }, { date: new Date('2015-01-02T00:00:00'), value: 16 }, { date: new Date('2015-01-03T00:00:00'), value: 21 }, { date: new Date('2015-01-06T00:00:00'), value: 13 }, { date: new Date('2015-01-07T00:00:00'), value: -4 }, { date: new Date('2015-01-08T00:00:00'), value: 2 }, { date: new Date('2015-01-09T00:00:00'), value: 12 }, { date: new Date('2015-01-10T00:00:00'), value: -1 }]
+}, {
+  name: 'Moscow',
+  color: '#F84',
+  data: [{ date: new Date('2015-01-01T00:00:00'), value: 7 }, { date: new Date('2015-01-02T00:00:00'), value: 5 }, { date: new Date('2015-01-03T00:00:00'), value: 17 }, { date: new Date('2015-01-04T00:00:00'), value: 12 }, { date: new Date('2015-01-06T00:00:00'), value: 2 }, { date: new Date('2015-01-07T00:00:00'), value: 10 }, { date: new Date('2015-01-08T00:00:00'), value: 21 }, { date: new Date('2015-01-09T00:00:00'), value: 14 }, { date: new Date('2015-01-10T00:00:00'), value: 17 }]
+}, {
+  name: 'St. Petersburg',
+  color: 'red',
+  data: [{ date: new Date('2015-01-01T00:00:00'), value: 1 }, { date: new Date('2015-01-02T00:00:00'), value: 3 }, { date: new Date('2015-01-03T00:00:00'), value: 2 }, { date: new Date('2015-01-04T00:00:00'), value: 7 }, { date: new Date('2015-01-06T00:00:00'), value: 17 }, { date: new Date('2015-01-07T00:00:00'), value: 12 }, { date: new Date('2015-01-08T00:00:00'), value: -3 }, { date: new Date('2015-01-09T00:00:00'), value: -11 }, { date: new Date('2015-01-10T00:00:00'), value: -8 }]
+}, {
+  name: 'Kiev',
+  data: [{ date: new Date('2015-01-01T00:00:00'), value: -9 }, { date: new Date('2015-01-02T00:00:00'), value: -3 }, { date: new Date('2015-01-05T00:00:00'), value: 10 }, { date: new Date('2015-01-06T00:00:00'), value: 8 }, { date: new Date('2015-01-07T00:00:00'), value: 9 }, { date: new Date('2015-01-08T00:00:00'), value: 3 }, { date: new Date('2015-01-09T00:00:00'), value: -2 }, { date: new Date('2015-01-10T00:00:00'), value: 5 }]
+}, {
+  name: 'Warsaw',
+  data: [{ date: new Date('2015-01-01T00:00:00'), value: 12 }, { date: new Date('2015-01-02T00:00:00'), value: 14 }, { date: new Date('2015-01-03T00:00:00'), value: -5 }, { date: new Date('2015-01-04T00:00:00'), value: -8 }, { date: new Date('2015-01-06T00:00:00'), value: -9 }, { date: new Date('2015-01-07T00:00:00'), value: -6 }, { date: new Date('2015-01-08T00:00:00'), value: -2 }, { date: new Date('2015-01-09T00:00:00'), value: 4 }, { date: new Date('2015-01-10T00:00:00'), value: 2 }]
+}];
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var stackBarData = exports.stackBarData = [{ date: new Date('2015-01-01T00:00:00'), color: 'red', name: 'dry', value: 1 }, { date: new Date('2015-01-02T00:00:00'), color: 'red', name: 'dry', value: 1 }, { date: new Date('2015-01-03T00:00:00'), color: 'yellow', name: 'wet', value: 2 }, { date: new Date('2015-01-04T00:00:00'), color: 'yellow', name: 'wet', value: 2 }, { date: new Date('2015-01-06T00:00:00'), color: 'blue', name: 'snow', value: 3 }, { date: new Date('2015-01-07T00:00:00'), color: 'blue', name: 'snow', value: 3 }, { date: new Date('2015-01-11T00:00:00'), color: 'green', name: 'ice', value: 4 }, { date: new Date('2015-01-12T00:00:00'), color: 'green', name: 'ice', value: 4 }, { date: new Date('2015-01-13T00:00:00'), color: 'green', name: 'ice', value: 4 }];
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _d = __webpack_require__(0);
+
+var d3 = _interopRequireWildcard(_d);
+
+var _index = __webpack_require__(9);
+
+var _lineChart = __webpack_require__(11);
+
+var _stackBar = __webpack_require__(12);
+
+__webpack_require__(13);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+// default line chart
+(function () {
+  var verticalDividerPlugin = (0, _index.verticalDivider)();
+  var markersPlugin = (0, _index.markers)();
+  var tooltipPlugin = (0, _index.tooltip)();
+
+  var lineChart = (0, _index.line)()
+  // subscribe plugins to chart events
+  .on(_index.chartEvents.chartMouseEnter, function () {
+    verticalDividerPlugin.show();
+  }).on(_index.chartEvents.chartMouseLeave, function () {
+    verticalDividerPlugin.remove();
+    markersPlugin.remove();
+    tooltipPlugin.remove();
+  }).on(_index.chartEvents.chartMouseMove, function (options) {
+    verticalDividerPlugin.update(options);
+    markersPlugin.show(options);
+    tooltipPlugin.show(options);
+  });
+
+  // create chart with data
+  var chartContainer = d3.select('.default-chart');
+  chartContainer.datum(_lineChart.lineChartData).call(lineChart);
+
+  // bind plugins to chart
+  var metadataContainer = d3.select('.default-chart .metadata-container');
+  metadataContainer.datum([]).call(verticalDividerPlugin);
+  metadataContainer.datum([]).call(markersPlugin);
+  metadataContainer.datum([]).call(tooltipPlugin);
+})();
+
+// configurated line chart
+(function () {
+  var verticalDividerPlugin = (0, _index.verticalDivider)();
+  var markersPlugin = (0, _index.markers)().fill(function (data) {
+    return data.interpolatedValue > 10 ? data.color : 'white';
+  }).radius(function (data) {
+    if (data.interpolatedValue > 10) {
+      return 10;
+    }
+    if (data.interpolatedValue < 0) {
+      return 3;
+    }
+    return 5;
+  }).sort(function (a, b) {
+    return b.interpolatedValue - a.interpolatedValue;
+  });
+
+  var tooltipPlugin = (0, _index.tooltip)().sort(function (a, b) {
+    return a.interpolatedValue - b.interpolatedValue;
+  }).valueFormatter(function (_ref) {
+    var interpolatedValue = _ref.interpolatedValue;
+    return interpolatedValue.toFixed(1) + '\xB0C';
+  }).headerFormatter(function (selectedDate, data) {
+    var date = d3.timeFormat('%d-%m %H:%M')(selectedDate);
+    return data.length ? 'Found ' + data.length + '</br>' + date : 'Nothing found</br>' + date;
+  });
+
+  var lineChart = (0, _index.line)().width(900).height(550).yAxisValueFormat(function (value) {
+    return value + '\xB0C';
+  }).xAxisTimeFormat(d3.timeFormat('%d-%m %H')).curve(d3.curveCatmullRom).on(_index.chartEvents.chartMouseEnter, function () {
+    verticalDividerPlugin.show();
+  }).on(_index.chartEvents.chartMouseLeave, function () {
+    verticalDividerPlugin.remove();
+    markersPlugin.remove();
+    tooltipPlugin.remove();
+  }).on(_index.chartEvents.chartMouseMove, function (options) {
+    verticalDividerPlugin.update(options);
+    markersPlugin.show(options);
+    tooltipPlugin.show(options);
+  }).on(_index.chartEvents.chartMouseClick, function () {});
+
+  verticalDividerPlugin.height(lineChart.chartHeight());
+
+  tooltipPlugin.chartHeight(lineChart.chartHeight()).chartWidth(lineChart.chartWidth());
+
+  var container = d3.select('.configured-chart');
+  container.datum(_lineChart.lineChartData).call(lineChart);
+
+  var metadataContainer = d3.select('.configured-chart .metadata-container');
+  metadataContainer.datum([]).call(verticalDividerPlugin);
+  metadataContainer.datum([]).call(markersPlugin);
+  metadataContainer.datum([]).call(tooltipPlugin);
+})();
+
+// stack bar
+(function () {
+  var chartHeight = 60;
+
+  var verticalDividerPlugin = (0, _index.verticalDivider)().height(chartHeight);
+  var tooltipPlugin = (0, _index.tooltip)({
+    chartHeight: 60,
+    verticalBorderMargin: -10,
+    topicFormatter: function topicFormatter(data) {
+      return data.name;
+    },
+    valueFormatter: function valueFormatter() {
+      return '';
+    }
+  });
+
+  var stackBarChart = (0, _index.stackBar)().on(_index.chartEvents.chartMouseEnter, function () {
+    verticalDividerPlugin.show();
+  }).on(_index.chartEvents.chartMouseLeave, function () {
+    verticalDividerPlugin.remove();
+    tooltipPlugin.remove();
+  }).on(_index.chartEvents.chartMouseMove, function (options) {
+    verticalDividerPlugin.update(options);
+    tooltipPlugin.show(options);
+  });
+
+  var chartContainer = d3.select('.stack-bar');
+  chartContainer.datum(_stackBar.stackBarData).call(stackBarChart);
+
+  var metadataContainer = d3.select('.stack-bar .metadata-container');
+  metadataContainer.datum([]).call(verticalDividerPlugin);
+  metadataContainer.datum([]).call(tooltipPlugin);
+})();
 
 /***/ })
 /******/ ]);

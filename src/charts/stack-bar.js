@@ -227,6 +227,10 @@ function stackBar({
 
     const closestData = diapasons
       .find(d => d.from <= selectedDate && selectedDate <= d.to);
+    
+    if (closestData) {
+      closestData.interpolatedDate = selectedDate;
+    }
 
     return closestData ? [closestData] : [];
   }
@@ -251,8 +255,8 @@ function stackBar({
       const leftDiapason = buildDiapason(prev);
       const rightDiapason = buildDiapason(curr);
 
-      leftDiapason.to = new Date(Math.min(new Date(prev.date.getTime() + maxTimeRangeDifferenceToDraw), avgDate));
-      rightDiapason.from = new Date(Math.max(new Date(curr.date.getTime() - maxTimeRangeDifferenceToDraw), avgDate));
+      leftDiapason.to = Math.min(new Date(prev.date.getTime() + maxTimeRangeDifferenceToDraw), avgDate);
+      rightDiapason.from = Math.max(new Date(curr.date.getTime() - maxTimeRangeDifferenceToDraw), avgDate);
 
       chartDiapasons.push(leftDiapason, rightDiapason);
       return curr;

@@ -156,44 +156,48 @@ declare module './index.js' {
     xAxisTimeFormat?: TickFormat;
     mouseMoveTimeTreshold?: number;
   }
+
+  interface StackBarPointData extends StackBarData {
+    interpolatedDate: Date;
+  }
   
-  interface StackBar {
+  interface StackBarChart {
     (selection: any): void;
 
     width: {
-      (width: number): StackBar;
+      (width: number): StackBarChart;
       (): number;
     };
 
     height: {
-      (height: number): StackBar;
+      (height: number): StackBarChart;
       (): number;
     };
 
     margin: {
-      (margin: { top: number, right: number, bottom: number, left: number }): StackBar;
+      (margin: { top: number, right: number, bottom: number, left: number }): StackBarChart;
       (): { top: number, right: number, bottom: number, left: number };
     };
 
     backgroundColor: {
-      (backgroundColor: string): StackBar;
+      (backgroundColor: string): StackBarChart;
       (): string;
     };
 
-    on: (event: string, callback: (...args: any[]) => void, ...args: any[]) => StackBar;
+    on: (event: string, callback: (...args: any[]) => void, ...args: any[]) => StackBarChart;
 
     maxTimeRangeDifferenceToDraw: {
-      (maxTimeRangeDifferenceToDraw: number): StackBar;
+      (maxTimeRangeDifferenceToDraw: number): StackBarChart;
       (): number;
     };
 
     xAxisTimeFormat: {
-      (xAxisTimeFormat: TickFormat): StackBar;
+      (xAxisTimeFormat: TickFormat): StackBarChart;
       (): TickFormat;
     };
 
     mouseMoveTimeTreshold: {
-      (mouseMoveTimeTreshold: number): StackBar;
+      (mouseMoveTimeTreshold: number): StackBarChart;
       (): number;
     }
   }
@@ -334,7 +338,7 @@ declare module './index.js' {
   }
 
   export function line(config?: LineChartConfig): LineChart;
-  export function stack(config?: StackBarConfig): StackBar;
+  export function stackBar(config?: StackBarConfig): StackBarChart;
 
   export const chartEvents: {
     chartMouseEnter: string;

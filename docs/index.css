@@ -13,32 +13,32 @@
   stroke-width: 1;
   stroke-dasharray: 4, 4;
 }
-.line-chart .tooltip {
+.metadata-container .tooltip {
   fill: #FFF;
 }
 
-.line-chart .tooltip rect {
+.metadata-container .tooltip rect {
   stroke: grey;
   stroke-width: 1px;
   rx: 0.32em;
   ry: 0.32em;
 }
 
-.line-chart .tooltip .tooltip-container {
+.metadata-container .tooltip .tooltip-container {
   padding: .5em;
 }
 
-.line-chart .tooltip .tooltip-header {
+.metadata-container .tooltip .tooltip-header {
   text-align: center;
 }
 
-.line-chart .tooltip .tooltip-header p {
+.metadata-container .tooltip .tooltip-header p {
   margin: 0;
   display: inline-block;
   line-height: 1em;
 }
 
-.line-chart .tooltip .circle {
+.metadata-container .tooltip .circle {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -46,24 +46,24 @@
   line-height: 1em;
 }
 
-.line-chart .tooltip .topic {
+.metadata-container .tooltip .topic {
   line-height: 1em;
   display: flex;
   padding: .3em 0;
 }
 
-.line-chart .tooltip .topic-name {
+.metadata-container .tooltip .topic-name {
   line-height: 1em;
   margin-left: .5em;
 }
 
-.line-chart .tooltip .topic-value {
+.metadata-container .tooltip .topic-value {
   line-height: 1em;
   align-self: flex-start;
   flex: 1;
   text-align: right;
 }
-.line-chart .divider {
+.metadata-container .divider {
   stroke: grey;
 }
 

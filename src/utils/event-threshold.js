@@ -9,7 +9,7 @@ function eventThreshold(threshold = 20) {
   let previousEventTime;
 
   function call(func) {
-    const currentDate = new Date().getTime();
+    const currentDate = Date.now();
     const timeSinceLastEvent = currentDate - previousEventTime;
 
     /*
@@ -36,7 +36,7 @@ function eventThreshold(threshold = 20) {
   }
 
   function runFunc(func) {
-    previousEventTime = new Date().getTime();
+    previousEventTime = Date.now();
     func();
   }
 
