@@ -18,7 +18,8 @@ function line({
     xAxisTimeFormat, yAxisValueFormat,
     curve = d3.curveBasis,
     interpolationMaxIterationCount = 25, interpolationAccuracy = 0.005,
-    mouseMoveTimeTreshold = 20
+    mouseMoveTimeTreshold = 20,
+    xAxisDateFrom, xAxisDateTo
   } = {}) {
 
   let svg;
@@ -69,8 +70,8 @@ function line({
     const chartDates = chartPoints.map(p => p.date);
     const chartValues = chartPoints.map(p => p.value);
 
-    const xMin = d3.min(chartDates);
-    const xMax = d3.max(chartDates);
+    const xMin = xAxisDateFrom || d3.min(chartDates);
+    const xMax = xAxisDateTo || d3.max(chartDates);
     const yMin = d3.min(chartValues);
     const yMax = d3.max(chartValues);
 

@@ -16,7 +16,8 @@ function stackBar({
     backgroundColor = '#CCC',
     maxTimeRangeDifferenceToDraw = 1000 * 60 * 60 * 24 * 1.5,
     xAxisTimeFormat,
-    mouseMoveTimeTreshold = 20
+    mouseMoveTimeTreshold = 20,
+    xAxisDateFrom, xAxisDateTo
   } = {}) {
 
   let svg;
@@ -24,7 +25,7 @@ function stackBar({
   let xAxis;
   let xScale;
 
-  let chartData, diapasons;
+  let diapasons;
 
   const colors = colorProvider();
   const diapasonColors = {};
@@ -56,14 +57,13 @@ function stackBar({
 
   function initializeChartData(data) {
     diapasons = getStackDiapasons(data);
-    chartData = data;
   }
 
   function createScales() {
-    const chartDates = chartData.map(p => p.date);
+    const chartDates = [].concat(...diapasons.map(d => [d.from, d.to]));
 
-    const xMin = d3.min(chartDates);
-    const xMax = d3.max(chartDates);
+    const xMin = xAxisDateFrom || d3.min(chartDates);
+    const xMax = xAxisDateTo || d3.max(chartDates);
 
     xScale = d3
       .scaleTime()
@@ -102,6 +102,7 @@ function stackBar({
         .classed('stack', true)
         .style('fill', d => d.color)
       .merge(stacks)
+        // trunc and ceil coords to prevent empty space between rectangles
         .attr('x', d => Math.trunc(xScale(d.from)))
         .attr('y', 0)
         .attr('width', d => Math.ceil(xScale(d.to) - xScale(d.from)))
@@ -241,27 +242,40 @@ function stackBar({
       return [];
     }
 
-    const chartDiapasons = [];
-    data.reduce((prev, curr) => {
-      const avgDate = new Date((prev.date.getTime() + curr.date.getTime()) / 2);
-
-      const buildDiapason = data => ({
-        color: getDiapasonColor(data),
-        name: data.name,
-        value: data.value,
-        from: data.date,
-        to: data.date
-      });
-
-      const leftDiapason = buildDiapason(prev);
-      const rightDiapason = buildDiapason(curr);
-
-      leftDiapason.to = Math.min(new Date(prev.date.getTime() + maxTimeRangeDifferenceToDraw), avgDate);
-      rightDiapason.from = Math.max(new Date(curr.date.getTime() - maxTimeRangeDifferenceToDraw), avgDate);
-
-      chartDiapasons.push(leftDiapason, rightDiapason);
-      return curr;
+    const buildDiapason = (data, from, to) => ({
+      color: getDiapasonColor(data),
+      name: data.name,
+      value: data.value,
+      from: from || data.date,
+      to: to || data.date
     });
+
+    const buildLeftDiapason = data => 
+      buildDiapason(data, new Date(data.date.getTime() - maxTimeRangeDifferenceToDraw), data.date);
+    const buildRightDiapason = data => 
+      buildDiapason(data, data.date, new Date(data.date.getTime() + maxTimeRangeDifferenceToDraw));
+
+    const sortedData = data
+      .sort((d1, d2) => d1.date > d2.date);
+    const chartDiapasons = [];
+
+    chartDiapasons.push(buildLeftDiapason(sortedData[0]));
+
+    if (sortedData.length > 1) {
+      sortedData
+        .reduce((prev, curr) => {
+          const avgDate = new Date((prev.date.getTime() + curr.date.getTime()) / 2);
+
+          const leftDiapason = buildDiapason(prev, prev.date, Math.min(new Date(prev.date.getTime() + maxTimeRangeDifferenceToDraw), avgDate));
+          const rightDiapason = buildDiapason(curr, Math.max(new Date(curr.date.getTime() - maxTimeRangeDifferenceToDraw), avgDate), curr.date);
+
+          chartDiapasons.push(leftDiapason, rightDiapason);
+          return curr;
+        });
+    }
+
+    chartDiapasons.push(buildRightDiapason(sortedData[sortedData.length - 1]));
+
     return chartDiapasons;
   }
 

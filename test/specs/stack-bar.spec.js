@@ -50,7 +50,7 @@ describe('stack chart', () => {
       expect(xAxis.empty()).toBeFalsy();
     });
 
-    it('should draw 2 rect between every dataset', () => {
+    it('should draw 2 rect for every dataset', () => {
       const rectangles = d3
         .select(div)
         .select('.data-stacks-container')
@@ -58,7 +58,7 @@ describe('stack chart', () => {
       
       const chartDataSetCount = stackBarData.length;
       expect(chartDataSetCount).toBeGreaterThan(1);
-      expect(rectangles.size()).toBe(chartDataSetCount * 2 - 2);
+      expect(rectangles.size()).toBe(chartDataSetCount * 2);
     });
   });
 

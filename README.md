@@ -168,14 +168,16 @@ width | Chart total width | Number | 700
 height | Chart total height | Number | 500
 margin | Chart graph margin to outer bounds | { top: number, right: number, bottom: number, left: number } | { top: 20, right: 30, bottom: 40, left: 40 }
 maxTimeRangeDifferenceToDraw | Max time in milliseconds to treat dataset points without breaking | Number | 1000 * 60 * 60 * 24 * 1.5 (1.5 days)
-xAxisTimeFormat | Date tick format for chart X Axis | d3.tickFormat | null
-yAxisValueFormat | Value tick format for chart Y Axis | d3.tickFormat | null
+xAxisTimeFormat | Date tick format for chart X Axis | d3.tickFormat | undefined
+yAxisValueFormat | Value tick format for chart Y Axis | d3.tickFormat | undefined
 curve | Curve type for line interpolation. **Important**: value interpolation compute on chart resulted line and depend on this config value | d3.curve | d3.curveBasis
 chartHeight | Chart graph actual heigth getter. Total height - (margin.top + margin.bottom) | Number |
 chartWidth | Chart graph actual width getter. Total width - (margin.left + margin.right | Number |
 interpolationMaxIterationCount | Interpolation cycle count. Computing will stop after N cycle or when Δx < accuracy **Important**: high value can slow preformance | Number | 50
 interpolationAccuracy | Interpolation Δx accuracy for searching y value on svg path. Computing will stop after N cycle or when Δx < accuracy | Number | 0.005
 mouseMoveTimeTreshold | Minimum time in milliseconds between chartMouseMove events | Number | 20
+xAxisDateFrom | Chart X Axis start date | Date | undefined
+xAxisDateTo | Chart X Axis end date | Date | undefined
 
 ### Stack chart
 
@@ -220,8 +222,10 @@ width | Chart total width | Number | 700
 height | Chart total height | Number | 500
 margin | Chart graph margin to outer bounds | { top: number, right: number, 
 backgroundColor | Chart background color | String | '#CCC'
-maxTimeRangeDifferenceToDraw | Max time in milliseconds to treat dataset xAxisTimeFormat | Date tick format for chart X Axis | d3.tickFormat | null
+maxTimeRangeDifferenceToDraw | Max time in milliseconds to treat dataset xAxisTimeFormat | Date tick format for chart X Axis | d3.tickFormat | undefined
 mouseMoveTimeTreshold | Minimum time in milliseconds between chartMouseMove events | Number | 20
+xAxisDateFrom | Chart X Axis start date | Date | undefined
+xAxisDateTo | Chart X Axis end date | Date | undefined
 
 ### Plugins
 

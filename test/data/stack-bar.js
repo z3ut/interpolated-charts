@@ -10,3 +10,7 @@ export const stackBarData = [
   { date: new Date('2015-01-12T00:00:00'), name: 'ice', value: 4 },
   { date: new Date('2015-01-13T00:00:00'), name: 'ice', value: 4 }
 ];
+
+export const stackBarSingleData = [
+  { date: new Date('2015-01-11T00:00:00'), name: 'ice', value: 4 },
+];

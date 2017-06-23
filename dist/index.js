@@ -254,7 +254,9 @@ function line() {
       _ref$interpolationAcc = _ref.interpolationAccuracy,
       interpolationAccuracy = _ref$interpolationAcc === undefined ? 0.005 : _ref$interpolationAcc,
       _ref$mouseMoveTimeTre = _ref.mouseMoveTimeTreshold,
-      mouseMoveTimeTreshold = _ref$mouseMoveTimeTre === undefined ? 20 : _ref$mouseMoveTimeTre;
+      mouseMoveTimeTreshold = _ref$mouseMoveTimeTre === undefined ? 20 : _ref$mouseMoveTimeTre,
+      xAxisDateFrom = _ref.xAxisDateFrom,
+      xAxisDateTo = _ref.xAxisDateTo;
 
   var svg = void 0;
   var chartWidth = void 0,
@@ -313,8 +315,8 @@ function line() {
       return p.value;
     });
 
-    var xMin = d3.min(chartDates);
-    var xMax = d3.max(chartDates);
+    var xMin = xAxisDateFrom || d3.min(chartDates);
+    var xMax = xAxisDateTo || d3.max(chartDates);
     var yMin = d3.min(chartValues);
     var yMax = d3.max(chartValues);
 
@@ -689,7 +691,9 @@ function stackBar() {
       maxTimeRangeDifferenceToDraw = _ref$maxTimeRangeDiff === undefined ? 1000 * 60 * 60 * 24 * 1.5 : _ref$maxTimeRangeDiff,
       xAxisTimeFormat = _ref.xAxisTimeFormat,
       _ref$mouseMoveTimeTre = _ref.mouseMoveTimeTreshold,
-      mouseMoveTimeTreshold = _ref$mouseMoveTimeTre === undefined ? 20 : _ref$mouseMoveTimeTre;
+      mouseMoveTimeTreshold = _ref$mouseMoveTimeTre === undefined ? 20 : _ref$mouseMoveTimeTre,
+      xAxisDateFrom = _ref.xAxisDateFrom,
+      xAxisDateTo = _ref.xAxisDateTo;
 
   var svg = void 0;
   var chartWidth = void 0,
@@ -697,8 +701,7 @@ function stackBar() {
   var xAxis = void 0;
   var xScale = void 0;
 
-  var chartData = void 0,
-      diapasons = void 0;
+  var diapasons = void 0;
 
   var colors = (0, _colorProvider.colorProvider)();
   var diapasonColors = {};
@@ -728,16 +731,17 @@ function stackBar() {
 
   function initializeChartData(data) {
     diapasons = getStackDiapasons(data);
-    chartData = data;
   }
 
   function createScales() {
-    var chartDates = chartData.map(function (p) {
-      return p.date;
-    });
+    var _ref2;
 
-    var xMin = d3.min(chartDates);
-    var xMax = d3.max(chartDates);
+    var chartDates = (_ref2 = []).concat.apply(_ref2, _toConsumableArray(diapasons.map(function (d) {
+      return [d.from, d.to];
+    })));
+
+    var xMin = xAxisDateFrom || d3.min(chartDates);
+    var xMax = xAxisDateTo || d3.max(chartDates);
 
     xScale = d3.scaleTime().domain([xMin, xMax]).range([0, chartWidth]);
   }
@@ -761,7 +765,9 @@ function stackBar() {
 
     stacks.enter().append('rect').classed('stack', true).style('fill', function (d) {
       return d.color;
-    }).merge(stacks).attr('x', function (d) {
+    }).merge(stacks)
+    // trunc and ceil coords to prevent empty space between rectangles
+    .attr('x', function (d) {
       return Math.trunc(xScale(d.from));
     }).attr('y', 0).attr('width', function (d) {
       return Math.ceil(xScale(d.to) - xScale(d.from));
@@ -870,29 +876,44 @@ function stackBar() {
       return [];
     }
 
-    var chartDiapasons = [];
-    data.reduce(function (prev, curr) {
-      var avgDate = new Date((prev.date.getTime() + curr.date.getTime()) / 2);
-
-      var buildDiapason = function buildDiapason(data) {
-        return {
-          color: getDiapasonColor(data),
-          name: data.name,
-          value: data.value,
-          from: data.date,
-          to: data.date
-        };
+    var buildDiapason = function buildDiapason(data, from, to) {
+      return {
+        color: getDiapasonColor(data),
+        name: data.name,
+        value: data.value,
+        from: from || data.date,
+        to: to || data.date
       };
+    };
 
-      var leftDiapason = buildDiapason(prev);
-      var rightDiapason = buildDiapason(curr);
+    var buildLeftDiapason = function buildLeftDiapason(data) {
+      return buildDiapason(data, new Date(data.date.getTime() - maxTimeRangeDifferenceToDraw), data.date);
+    };
+    var buildRightDiapason = function buildRightDiapason(data) {
+      return buildDiapason(data, data.date, new Date(data.date.getTime() + maxTimeRangeDifferenceToDraw));
+    };
 
-      leftDiapason.to = Math.min(new Date(prev.date.getTime() + maxTimeRangeDifferenceToDraw), avgDate);
-      rightDiapason.from = Math.max(new Date(curr.date.getTime() - maxTimeRangeDifferenceToDraw), avgDate);
-
-      chartDiapasons.push(leftDiapason, rightDiapason);
-      return curr;
+    var sortedData = data.sort(function (d1, d2) {
+      return d1.date > d2.date;
     });
+    var chartDiapasons = [];
+
+    chartDiapasons.push(buildLeftDiapason(sortedData[0]));
+
+    if (sortedData.length > 1) {
+      sortedData.reduce(function (prev, curr) {
+        var avgDate = new Date((prev.date.getTime() + curr.date.getTime()) / 2);
+
+        var leftDiapason = buildDiapason(prev, prev.date, Math.min(new Date(prev.date.getTime() + maxTimeRangeDifferenceToDraw), avgDate));
+        var rightDiapason = buildDiapason(curr, Math.max(new Date(curr.date.getTime() - maxTimeRangeDifferenceToDraw), avgDate), curr.date);
+
+        chartDiapasons.push(leftDiapason, rightDiapason);
+        return curr;
+      });
+    }
+
+    chartDiapasons.push(buildRightDiapason(sortedData[sortedData.length - 1]));
+
     return chartDiapasons;
   }
 
