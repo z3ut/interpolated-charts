@@ -67,35 +67,3 @@
   stroke: grey;
 }
 
-.container {
-  max-width: 1200px;
-  margin: auto;
-}
-
-@media (max-width: 1200px) {
-  .container {
-    max-width: 100%;
-  }
-}
-
-.chart-example {
-  padding: 1em;
-  text-align: center;
-}
-
-.chart-example .description {
-  text-align: center;
-}
-
-pre {
-  text-align: left;
-  margin: 0;
-  background-color: #EEE;
-  border: 1px solid grey;
-  padding: 1em;
-}
-
-.source-code {
-  max-width: 700px;
-  margin: auto;
-}

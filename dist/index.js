@@ -157,7 +157,7 @@ function eventThreshold() {
   var previousEventTime = void 0;
 
   function call(func) {
-    var currentDate = new Date().getTime();
+    var currentDate = Date.now();
     var timeSinceLastEvent = currentDate - previousEventTime;
 
     /*
@@ -184,7 +184,7 @@ function eventThreshold() {
   }
 
   function runFunc(func) {
-    previousEventTime = new Date().getTime();
+    previousEventTime = Date.now();
     func();
   }
 
@@ -701,6 +701,7 @@ function stackBar() {
       diapasons = void 0;
 
   var colors = (0, _colorProvider.colorProvider)();
+  var diapasonColors = {};
   var events = (0, _eventThreshold2.default)(mouseMoveTimeTreshold);
 
   var dispatcher = d3.dispatch(chartEvents.chartMouseEnter, chartEvents.chartMouseLeave, chartEvents.chartMouseMove, chartEvents.chartMouseClick);
@@ -875,7 +876,7 @@ function stackBar() {
 
       var buildDiapason = function buildDiapason(data) {
         return {
-          color: data.color || colors.next().value,
+          color: getDiapasonColor(data),
           name: data.name,
           value: data.value,
           from: data.date,
@@ -886,13 +887,24 @@ function stackBar() {
       var leftDiapason = buildDiapason(prev);
       var rightDiapason = buildDiapason(curr);
 
-      leftDiapason.to = new Date(Math.min(new Date(prev.date.getTime() + maxTimeRangeDifferenceToDraw), avgDate));
-      rightDiapason.from = new Date(Math.max(new Date(curr.date.getTime() - maxTimeRangeDifferenceToDraw), avgDate));
+      leftDiapason.to = Math.min(new Date(prev.date.getTime() + maxTimeRangeDifferenceToDraw), avgDate);
+      rightDiapason.from = Math.max(new Date(curr.date.getTime() - maxTimeRangeDifferenceToDraw), avgDate);
 
       chartDiapasons.push(leftDiapason, rightDiapason);
       return curr;
     });
     return chartDiapasons;
+  }
+
+  function getDiapasonColor(diapason) {
+    if (diapason.color) {
+      return diapason.color;
+    }
+    if (diapasonColors[diapason.name]) {
+      return diapasonColors[diapason.name];
+    }
+    diapasonColors[diapason.name] = colors.next().value;
+    return diapasonColors[diapason.name];
   }
 
   exports.width = function (_width) {

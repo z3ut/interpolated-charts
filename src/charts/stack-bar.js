@@ -27,6 +27,7 @@ function stackBar({
   let chartData, diapasons;
 
   const colors = colorProvider();
+  const diapasonColors = {};
   let events = eventThreshold(mouseMoveTimeTreshold);
 
   const dispatcher = d3.dispatch(chartEvents.chartMouseEnter,
@@ -245,7 +246,7 @@ function stackBar({
       const avgDate = new Date((prev.date.getTime() + curr.date.getTime()) / 2);
 
       const buildDiapason = data => ({
-        color: data.color || colors.next().value,
+        color: getDiapasonColor(data),
         name: data.name,
         value: data.value,
         from: data.date,
@@ -262,6 +263,17 @@ function stackBar({
       return curr;
     });
     return chartDiapasons;
+  }
+
+  function getDiapasonColor(diapason) {
+    if (diapason.color) {
+      return diapason.color;
+    }
+    if (diapasonColors[diapason.name]) {
+      return diapasonColors[diapason.name];
+    }
+    diapasonColors[diapason.name] = colors.next().value;
+    return diapasonColors[diapason.name];
   }
 
   exports.width = function(_width) {
