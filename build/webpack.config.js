@@ -15,6 +15,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
+        exclude: [/node_modules/],
         use: ExtractTextPlugin.extract({
           use: 'css-loader'
         })
