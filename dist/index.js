@@ -763,14 +763,19 @@ function stackBar() {
     // reverse order - first path should be drawn above last
     .data(diapasons);
 
+    var computeXPosition = function computeXPosition(date) {
+      return moveNumToRange(Math.trunc(xScale(date)), 0, chartWidth);
+    };
+
     stacks.enter().append('rect').classed('stack', true).style('fill', function (d) {
       return d.color;
     }).merge(stacks)
     // trunc and ceil coords to prevent empty space between rectangles
+    // moveNumToRange to remove overflow
     .attr('x', function (d) {
-      return Math.trunc(xScale(d.from));
+      return computeXPosition(d.from);
     }).attr('y', 0).attr('width', function (d) {
-      return Math.ceil(xScale(d.to) - xScale(d.from));
+      return moveNumToRange(Math.ceil(xScale(d.to) - xScale(d.from)), 0, chartWidth - computeXPosition(d.from));
     }).attr('height', chartHeight);
 
     stacks.exit().remove();
@@ -843,10 +848,11 @@ function stackBar() {
     dispatcher.call.apply(dispatcher, [chartEvents.chartMouseLeave].concat(_toConsumableArray(d3.mouse(this))));
   }
 
+  function moveNumToRange(num, min, max) {
+    return Math.min(Math.max(num, min), max);
+  }
+
   function getMouseEventOptions(x, y) {
-    var moveNumToRange = function moveNumToRange(num, min, max) {
-      return Math.min(Math.max(num, min), max);
-    };
     // coords inside of chart
     x = moveNumToRange(x - margin.left, 0, chartWidth);
     y = moveNumToRange(y - margin.top, 0, chartHeight);
@@ -893,8 +899,9 @@ function stackBar() {
       return buildDiapason(data, data.date, new Date(data.date.getTime() + maxTimeRangeDifferenceToDraw));
     };
 
-    var sortedData = data;
-    // .sort((d1, d2) => d1.date - d2.date);
+    var sortedData = data.sort(function (d1, d2) {
+      return d1.date - d2.date;
+    });
     var chartDiapasons = [];
 
     chartDiapasons.push(buildLeftDiapason(sortedData[0]));
