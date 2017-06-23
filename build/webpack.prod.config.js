@@ -5,12 +5,14 @@ var baseWebpackConfig = require('./webpack.config.js');
 var vendorsPath = path.resolve('./node_modules');
 
 module.exports = merge(baseWebpackConfig, {
-  rules: [
-    {
-      test: /\.css$/,
-      exclude: [/demo/]
-    }
-  ],
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        exclude: [/demo/]
+      }
+    ]
+  },
   entry: {
     'index': './src/index.js',
     'index.min': './src/index.js'
