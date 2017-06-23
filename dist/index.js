@@ -1000,6 +1000,22 @@ function stackBar() {
     return width - margin.left - margin.right;
   };
 
+  exports.xAxisDateFrom = function (_xAxisDateFrom) {
+    if (!arguments.length) {
+      return xAxisDateFrom;
+    }
+    xAxisDateFrom = _xAxisDateFrom;
+    return this;
+  };
+
+  exports.xAxisDateTo = function (_xAxisDateTo) {
+    if (!arguments.length) {
+      return xAxisDateTo;
+    }
+    xAxisDateTo = _xAxisDateTo;
+    return this;
+  };
+
   return exports;
 }
 

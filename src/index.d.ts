@@ -59,6 +59,8 @@ declare module './index.js' {
     interpolationMaxIterationCount?: number;
     interpolationAccuracy?: number;
     mouseMoveTimeTreshold?: number;
+    xAxisDateFrom: Date;
+    xAxisDateTo: Date;
   }
 
   interface MouseEventChartData {
@@ -129,6 +131,16 @@ declare module './index.js' {
       (): number;
     }
 
+    xAxisDateFrom: {
+      (xAxisDateFrom: Date): StackBarChart;
+      (): Date;
+    };
+
+    xAxisDateTo: {
+      (xAxisDateTo: Date): StackBarChart;
+      (): Date;
+    };
+
     chartHeight: () => number;
     chartWidth: () => number;
   }
@@ -155,6 +167,8 @@ declare module './index.js' {
     maxTimeRangeDifferenceToDraw?: number;
     xAxisTimeFormat?: TickFormat;
     mouseMoveTimeTreshold?: number;
+    xAxisDateFrom: Date;
+    xAxisDateTo: Date;
   }
 
   interface StackBarPointData extends StackBarData {
@@ -194,6 +208,16 @@ declare module './index.js' {
     xAxisTimeFormat: {
       (xAxisTimeFormat: TickFormat): StackBarChart;
       (): TickFormat;
+    };
+
+    xAxisDateFrom: {
+      (xAxisDateFrom: Date): StackBarChart;
+      (): Date;
+    };
+
+    xAxisDateTo: {
+      (xAxisDateTo: Date): StackBarChart;
+      (): Date;
     };
 
     mouseMoveTimeTreshold: {
