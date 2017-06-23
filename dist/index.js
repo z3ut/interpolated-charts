@@ -893,9 +893,8 @@ function stackBar() {
       return buildDiapason(data, data.date, new Date(data.date.getTime() + maxTimeRangeDifferenceToDraw));
     };
 
-    var sortedData = data.sort(function (d1, d2) {
-      return d1.date > d2.date;
-    });
+    var sortedData = data;
+    // .sort((d1, d2) => d1.date - d2.date);
     var chartDiapasons = [];
 
     chartDiapasons.push(buildLeftDiapason(sortedData[0]));

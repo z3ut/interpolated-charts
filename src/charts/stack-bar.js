@@ -256,7 +256,7 @@ function stackBar({
       buildDiapason(data, data.date, new Date(data.date.getTime() + maxTimeRangeDifferenceToDraw));
 
     const sortedData = data
-      .sort((d1, d2) => d1.date > d2.date);
+      // .sort((d1, d2) => d1.date - d2.date);
     const chartDiapasons = [];
 
     chartDiapasons.push(buildLeftDiapason(sortedData[0]));
