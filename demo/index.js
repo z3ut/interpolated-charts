@@ -1,9 +1,7 @@
 import * as d3 from 'd3';
 import { line, stackBar, chartEvents, verticalDivider, markers, tooltip } from '../src/index.js';
 import { lineChartData } from '../test/data/line-chart';
-import {
-  stackBarData, stackBarSingleData, stackBarScatteredData
-} from '../test/data/stack-bar';
+import { stackBarMultipleData } from '../test/data/stack-bar';
 import './index.css';
 
 // default line chart
@@ -106,59 +104,19 @@ import './index.css';
   metadataContainer.datum([]).call(tooltipPlugin);
 })();
 
-// stack bar
+// stack bar multiple
 (() => {
-  const chartHeight = 60;
+  const chartHeight = 140;
 
   const verticalDividerPlugin = verticalDivider()
-    .height(chartHeight);
   const tooltipPlugin = tooltip({
-    chartHeight: 60,
     verticalBorderMargin: -10,
     topicFormatter: data => data.name,
-    valueFormatter: () => ''
+    valueFormatter: data => data.value ? data.value : 'No data'
   })
-
-  const stackBarChart = stackBar()
-    .on(chartEvents.chartMouseEnter, () => {
-      verticalDividerPlugin.show();
-    })
-    .on(chartEvents.chartMouseLeave, () => {
-      verticalDividerPlugin.remove();
-      tooltipPlugin.remove();
-    })
-    .on(chartEvents.chartMouseMove, (options) => {
-      verticalDividerPlugin.update(options);
-      tooltipPlugin.show(options);
-    });
-
-  const chartContainer = d3.select('.stack-bar');
-  chartContainer.datum(stackBarData).call(stackBarChart);
-
-  const metadataContainer = d3.select('.stack-bar .metadata-container');
-  metadataContainer.datum([]).call(verticalDividerPlugin);
-  metadataContainer.datum([]).call(tooltipPlugin);
-})();
-
-// stack bar
-(() => {
-  const chartHeight = 60;
-
-  const verticalDividerPlugin = verticalDivider()
-    .height(chartHeight);
-  const tooltipPlugin = tooltip({
-    chartHeight: 60,
-    verticalBorderMargin: -10,
-    topicFormatter: data => data.name,
-    valueFormatter: () => ''
-  })
-
-  const dateFrom = new Date('2014-11-01T00:00:00');
-  const dateTo = new Date('2015-03-01T00:00:00');
 
   const stackBarChart = stackBar({
-    xAxisDateFrom: dateFrom,
-    xAxisDateTo: dateTo
+    height: chartHeight
   })
     .on(chartEvents.chartMouseEnter, () => {
       verticalDividerPlugin.show();
@@ -172,10 +130,13 @@ import './index.css';
       tooltipPlugin.show(options);
     });
 
-  const chartContainer = d3.select('.stack-bar-single');
-  chartContainer.datum(stackBarSingleData).call(stackBarChart);
+  verticalDividerPlugin.height(stackBarChart.chartHeight());
+  tooltipPlugin.chartHeight(stackBarChart.chartHeight());
 
-  const metadataContainer = d3.select('.stack-bar-single .metadata-container');
+  const chartContainer = d3.select('.stack-bar-multiple');
+  chartContainer.datum(stackBarMultipleData).call(stackBarChart);
+
+  const metadataContainer = d3.select('.stack-bar-multiple .metadata-container');
   metadataContainer.datum([]).call(verticalDividerPlugin);
   metadataContainer.datum([]).call(tooltipPlugin);
 })();

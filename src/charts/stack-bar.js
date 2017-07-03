@@ -13,6 +13,7 @@ const chartEvents = {
 function stackBar({
     width = 700, height = 120,
     margin = { top: 20, right: 30, bottom: 40, left: 40 },
+    marginBetweenStacks = 10,
     backgroundColor = '#CCC',
     maxTimeRangeDifferenceToDraw = 1000 * 60 * 60 * 24 * 1.5,
     xAxisTimeFormat,
@@ -22,6 +23,7 @@ function stackBar({
 
   let svg;
   let chartWidth, chartHeight;
+  let stackHeight;
   let xAxis;
   let xScale;
 
@@ -56,14 +58,17 @@ function stackBar({
   }
 
   function initializeChartData(data) {
-    diapasons = getStackDiapasons(data);
+    const numberOfStacks = data.length;
+    stackHeight = (chartHeight - (numberOfStacks - 1) * marginBetweenStacks) / numberOfStacks;
+    diapasons = data.map(d => getStackDiapasons(d));
   }
 
   function createScales() {
-    const chartDates = [].concat(...diapasons.map(d => [d.from, d.to]));
+    const allChartDiapasons = [].concat.apply([], diapasons.map(d => d.chartDiapasons))// .map(d => [d.from, d.to]);
+    const allChartDates = allChartDiapasons.map(d => d.from).concat(allChartDiapasons.map(d => d.to));
 
-    const xMin = xAxisDateFrom || d3.min(chartDates);
-    const xMax = xAxisDateTo || d3.max(chartDates);
+    const xMin = xAxisDateFrom || d3.min(allChartDates);
+    const xMax = xAxisDateTo || d3.max(allChartDates);
 
     xScale = d3
       .scaleTime()
@@ -92,26 +97,40 @@ function stackBar({
   function drawRectangles() {
     const stacks = svg
       .select('.data-stacks-container')
-      .selectAll('.stack')
+      .selectAll('.stack-holder')
       // reverse order - first path should be drawn above last
       .data(diapasons);
 
     const computeXPosition = date =>
       moveNumToRange(Math.trunc(xScale(date)), 0, chartWidth);
 
-    stacks
+    const stackHolders = stacks
+      .enter()
+        .append('g')
+        .classed('stack-holder', true)
+      .merge(stacks)
+        .attr('transform', (d, i) => `translate(0, ${i * (stackHeight + marginBetweenStacks)})`)
+        .attr('width', chartWidth)
+        .attr('height', stackHeight);
+        
+    stackHolders.append('rect')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', chartWidth)
+      .attr('height', stackHeight)
+      .style('fill', d => d.backgroundColor)
+
+    stackHolders.selectAll('.stack-holder')
+      .data(d => d.chartDiapasons)
+
       .enter()
         .append('rect')
-        .classed('stack', true)
-        .style('fill', d => d.color)
-      .merge(stacks)
-        // trunc and ceil coords to prevent empty space between rectangles
-        // moveNumToRange to remove overflow
         .attr('x', d => computeXPosition(d.from))
-        .attr('y', 0)
+        .attr('y', () => 0)
+        .style('fill', (d) => d.color)
         .attr('width', d => moveNumToRange(Math.ceil(xScale(d.to) - xScale(d.from)),
           0, chartWidth - computeXPosition(d.from)))
-        .attr('height', chartHeight);
+        .attr('height', stackHeight);  
     
     stacks
       .exit()
@@ -234,25 +253,31 @@ function stackBar({
 
   function getClosestData(x) {
     const selectedDate = xScale.invert(x);
+    const closestData = [];
 
-    const closestData = diapasons
-      .find(d => d.from <= selectedDate && selectedDate <= d.to);
-    
-    if (closestData) {
-      closestData.interpolatedDate = selectedDate;
-    }
+    diapasons.forEach(d => {
+      const selectedDiapason = {
+        name: d.name,
+        interpolatedDate: selectedDate
+      };
+      const closestDiapason = d.chartDiapasons
+        .find(d => d.from <= selectedDate && selectedDate <= d.to)
+      if (closestDiapason) {
+        Object.assign(selectedDiapason, closestDiapason);
+      }
+      closestData.push(selectedDiapason);
+    });
 
-    return closestData ? [closestData] : [];
+    return closestData;
   }
 
-  function getStackDiapasons(data) {
+  function getStackDiapasons({ data, backgroundColor, name }) {
     if (!Array.isArray(data) || !data.length) {
       return [];
     }
 
     const buildDiapason = (data, from, to) => ({
       color: getDiapasonColor(data),
-      name: data.name,
       value: data.value,
       from: from || data.date,
       to: to || data.date
@@ -274,17 +299,17 @@ function stackBar({
         .reduce((prev, curr) => {
           const avgDate = new Date((prev.date.getTime() + curr.date.getTime()) / 2);
 
-          const leftDiapason = buildDiapason(prev, prev.date, Math.min(new Date(prev.date.getTime() + maxTimeRangeDifferenceToDraw), avgDate));
-          const rightDiapason = buildDiapason(curr, Math.max(new Date(curr.date.getTime() - maxTimeRangeDifferenceToDraw), avgDate), curr.date);
+          const leftDiapason = buildDiapason(prev, prev.date, d3.min([new Date(prev.date.getTime() + maxTimeRangeDifferenceToDraw), avgDate]));
+          const rightDiapason = buildDiapason(curr, d3.max([new Date(curr.date.getTime() - maxTimeRangeDifferenceToDraw), avgDate]), curr.date);
 
           chartDiapasons.push(leftDiapason, rightDiapason);
+
           return curr;
         });
     }
 
     chartDiapasons.push(buildRightDiapason(sortedData[sortedData.length - 1]));
-
-    return chartDiapasons;
+    return { chartDiapasons, backgroundColor, name };
   }
 
   function getDiapasonColor(diapason) {
