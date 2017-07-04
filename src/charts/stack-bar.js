@@ -125,6 +125,7 @@ function stackBar({
 
       .enter()
         .append('rect')
+        .classed('stack-diapason', true)
         .attr('x', d => computeXPosition(d.from))
         .attr('y', () => 0)
         .style('fill', (d) => d.color)

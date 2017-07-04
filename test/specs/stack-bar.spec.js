@@ -1,5 +1,5 @@
 import { stackBar, chartEvents } from '../../src/index.js';
-import { stackBarData } from '../data/stack-bar.js';
+import { stackBarMultipleData } from '../data/stack-bar.js';
 import * as d3 from 'd3';
 
 describe('stack chart', () => {
@@ -15,7 +15,7 @@ describe('stack chart', () => {
 
     d3
       .select('.chart')
-      .datum(stackBarData).call(stackBarChart);
+      .datum(stackBarMultipleData).call(stackBarChart);
   });
 
   afterEach(() => {
@@ -50,15 +50,29 @@ describe('stack chart', () => {
       expect(xAxis.empty()).toBeFalsy();
     });
 
-    it('should draw 2 rect for every dataset', () => {
-      const rectangles = d3
+    it('should draw stack holders for every dataset', () => {
+      const stackHolders = d3
         .select(div)
         .select('.data-stacks-container')
-        .selectAll('.stack');
+        .selectAll('.stack-holder');
       
-      const chartDataSetCount = stackBarData.length;
-      expect(chartDataSetCount).toBeGreaterThan(1);
-      expect(rectangles.size()).toBe(chartDataSetCount * 2);
+      const stackDataSetCount = stackBarMultipleData.length;
+      expect(stackHolders.size()).toBe(stackDataSetCount);
+    });
+
+    it('should draw 2 rect for every stack dataset', () => {
+      const stackHolders = d3
+        .select(div)
+        .select('.data-stacks-container')
+        .selectAll('.stack-holder');
+      
+      stackHolders.each(function (d, i) {
+        const rectangles = d3
+          .select(this)
+          .selectAll('.stack-diapason');
+        const dataSetCount = stackBarMultipleData[i].data.length;
+        expect(rectangles.size()).toBe(dataSetCount * 2);
+      });
     });
   });
 
