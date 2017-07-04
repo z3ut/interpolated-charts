@@ -309,8 +309,9 @@ function line({
         closestData.push(closesPoint);
         previousClosestPathes[data.name] = pathLength;
       });
-
-    return closestData;
+    
+    // reverse to move last elements on top of svg to array start
+    return closestData.reverse();
   }
 
   function getDiapasonsWithData(data) {

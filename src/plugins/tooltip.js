@@ -86,7 +86,7 @@ function tooltip({
     div
       .append('hr');
 
-    data.slice().sort(sort).reverse().forEach(d => {
+    data.slice().sort(sort).forEach(d => {
       const container = div
         .append('div')
         .classed('topic', true);
