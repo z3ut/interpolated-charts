@@ -132,10 +132,10 @@ chartEvents.chartMouseEnter - mouse entered chart boundary. Arguments - mouse co
 
 chartEvents.chartMouseLeave - mouse leaved chart boundary. Arguments - mouse coordinates x, y relative to chart;
 
-chartEvents.chartMouseMove - mouse moved inside chart boundary. Event treshhold (mouseMoveTimeTreshold, ms) - min time between events. Arguments - { x: number, y: number, selectedDate: Date, data: ChartLinePointData[] }. data - array of closest chart points data based on mouse current position:
+chartEvents.chartMouseMove - mouse moved inside chart boundary. Event treshhold (mouseMoveTimeTreshold, ms) - min time between events. Arguments - { x: number, y: number, selectedDate: Date, data: PointData[] }. data - array of closest chart points data based on mouse current position:
 
 ```typescript
-interface ChartLinePointData {
+interface PointData {
   // concrete values from PathDataSet and their coordinates on graph
   date: Date;
   value: number;
@@ -152,7 +152,7 @@ interface ChartLinePointData {
 }
 ```
 
-chartEvents.chartMouseClick - mouse click inside chart boundary. Arguments - { x: number, y: number, selectedDate: Date, data: ChartLinePointData[] }.
+chartEvents.chartMouseClick - mouse click inside chart boundary. Arguments - { x: number, y: number, selectedDate: Date, data: PointData[] }.
 
 #### CSS
 
@@ -179,7 +179,7 @@ mouseMoveTimeTreshold | Minimum time in milliseconds between chartMouseMove even
 xAxisDateFrom | Chart X Axis start date | Date | undefined
 xAxisDateTo | Chart X Axis end date | Date | undefined
 
-### Stack chart
+### Stack bar
 
 #### Usage
 
@@ -213,9 +213,9 @@ chartEvents.chartMouseEnter - mouse entered chart boundary. Arguments - mouse co
 
 chartEvents.chartMouseLeave - mouse leaved chart boundary. Arguments - mouse coordinates x, y relative to chart;
 
-chartEvents.chartMouseMove - mouse moved inside chart boundary. Event treshhold (mouseMoveTimeTreshold, ms) - min time between events. Arguments - { x: number, y: number, selectedDate: Date, data: StackData[] }. data - array of closest chart points data based on mouse current position:
+chartEvents.chartMouseMove - mouse moved inside chart boundary. Event treshhold (mouseMoveTimeTreshold, ms) - min time between events. Arguments - { x: number, y: number, selectedDate: Date, data: StackBarEventData[] }. data - array of closest chart points data based on mouse current position:
 
-chartEvents.chartMouseClick - mouse click inside chart boundary. Arguments - { x: number, y: number, selectedDate: Date, data: StackData[] }.
+chartEvents.chartMouseClick - mouse click inside chart boundary. Arguments - { x: number, y: number, selectedDate: Date, data: StackBarEventData[] }.
 
 #### Options
 

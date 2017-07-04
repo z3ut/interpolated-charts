@@ -17,19 +17,6 @@ declare module './index.js' {
     data: { date: Date, value: number }[];
   }
 
-  interface ChartLinePointData {
-    date: Date;
-    value: number;
-    x: number;
-    y: number;
-    interpolatedX: number;
-    interpolatedY: number;
-    interpolatedDate: Date;
-    interpolatedValue: number;
-    name: string;
-    color: string;
-  }
-
   interface PointData {
     date: Date;
     value: number;
@@ -155,6 +142,15 @@ declare module './index.js' {
       color?: string,
       value: any
     }[];
+  }
+
+  interface StackBarEventData {
+    interpolatedDate: Date;
+    from: Date;
+    to: Date;
+    value: number;
+    name: string;
+    color: string;
   }
 
   interface StackBarConfig {
@@ -295,17 +291,18 @@ declare module './index.js' {
     tooltipWidth?: number;
     horizontalMouseMargin?: number;
     verticalBorderMargin?: number;
-    headerFormatter?: (selectedDate: Date, data: PointData[] ) => string;
-    topicFormatter?: (data: PointData) => string;
-    valueFormatter?: (data: PointData) => string;
+    headerFormatter?: (selectedDate: Date, data: PointData[] | StackBarEventData[] ) => string;
+    topicFormatter?: (data: PointData | StackBarEventData) => string;
+    valueFormatter?: (data: PointData | StackBarEventData) => string;
     sort?: (markerData1: PointData, markerData2: PointData) => number;
+    sort?: (markerData1: StackBarEventData, markerData2: StackBarEventData) => number;
   }
 
   interface Tooltip {
     (selection: any): void;
 
     remove: () => Tooltip;
-    show: ({ x, y, selectedDate, data }: { x: number, y: number, selectedDate: Date, data: PointData[]} ) => Tooltip;
+    show: ({ x, y, selectedDate, data }: { x: number, y: number, selectedDate: Date, data: PointData[] | StackBarEventData[]}) => Tooltip;
 
     chartHeight: {
       (chartHeight: number): Tooltip;
@@ -333,23 +330,24 @@ declare module './index.js' {
     };
 
     headerFormatter: {
-      (headerFormatter: (selectedDate: Date, data: PointData[]) => string): Tooltip;
-      (): (selectedDate: Date, data: PointData[]) => string;
+      (headerFormatter: (selectedDate: Date, data: PointData[] | StackBarEventData[]) => string): Tooltip;
+      (): (selectedDate: Date, data: PointData[] | StackBarEventData[]) => string;
     };
 
     topicFormatter: {
-      (topicFormatter: (data: PointData) => string): Tooltip;
-      (): (data: PointData) => string;
+      (topicFormatter: (data: PointData | StackBarEventData) => string): Tooltip;
+      (): (data: PointData | StackBarEventData) => string;
     };
 
     valueFormatter: {
-      (valueFormatter: (data: PointData) => string): Tooltip;
-      (): (data: PointData) => string;
+      (valueFormatter: (data: PointData | StackBarEventData) => string): Tooltip;
+      (): (data: PointData | StackBarEventData) => string;
     };
 
     sort: {
       (sort: (markerData1: PointData, markerData2: PointData) => number): Tooltip;
-      (): (markerData1: PointData, markerData2: PointData) => number;
+      (sort: (markerData1: StackBarEventData, markerData2: StackBarEventData) => number): Tooltip;
+      (): (markerData1: PointData | StackBarEventData, markerData2: PointData | StackBarEventData) => number;
     };
   }
 
