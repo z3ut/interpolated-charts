@@ -148,7 +148,7 @@ declare module './index.js' {
     interpolatedDate: Date;
     from: Date;
     to: Date;
-    value: number;
+    value: any;
     name: string;
     color: string;
   }
