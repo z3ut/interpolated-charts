@@ -496,7 +496,8 @@ function line() {
       previousClosestPathes[data.name] = pathLength;
     });
 
-    return closestData;
+    // reverse to move last elements on top of svg to array start
+    return closestData.reverse();
   }
 
   function getDiapasonsWithData(data) {
@@ -686,9 +687,9 @@ function stackBar() {
       _ref$margin = _ref.margin,
       margin = _ref$margin === undefined ? { top: 20, right: 30, bottom: 40, left: 40 } : _ref$margin,
       _ref$marginBetweenSta = _ref.marginBetweenStacks,
-      marginBetweenStacks = _ref$marginBetweenSta === undefined ? 10 : _ref$marginBetweenSta,
+      marginBetweenStacks = _ref$marginBetweenSta === undefined ? 0 : _ref$marginBetweenSta,
       _ref$backgroundColor = _ref.backgroundColor,
-      backgroundColor = _ref$backgroundColor === undefined ? '#CCC' : _ref$backgroundColor,
+      backgroundColor = _ref$backgroundColor === undefined ? '#CCCCCC' : _ref$backgroundColor,
       _ref$maxTimeRangeDiff = _ref.maxTimeRangeDifferenceToDraw,
       maxTimeRangeDifferenceToDraw = _ref$maxTimeRangeDiff === undefined ? 1000 * 60 * 60 * 24 * 1.5 : _ref$maxTimeRangeDiff,
       xAxisTimeFormat = _ref.xAxisTimeFormat,
@@ -741,14 +742,15 @@ function stackBar() {
   }
 
   function createScales() {
-    var allChartDiapasons = [].concat.apply([], diapasons.map(function (d) {
+    var dateRanges = [].concat.apply([], diapasons.map(function (d) {
       return d.chartDiapasons;
-    })); // .map(d => [d.from, d.to]);
-    var allChartDates = allChartDiapasons.map(function (d) {
-      return d.from;
-    }).concat(allChartDiapasons.map(function (d) {
-      return d.to;
-    }));
+    }).filter(function (d) {
+      return d;
+    })).map(function (d) {
+      return [d.from, d.to];
+    });
+
+    var allChartDates = [].concat.apply([], dateRanges);
 
     var xMin = xAxisDateFrom || d3.min(allChartDates);
     var xMax = xAxisDateTo || d3.max(allChartDates);
@@ -909,7 +911,7 @@ function stackBar() {
         name = _ref2.name;
 
     if (!Array.isArray(data) || !data.length) {
-      return [];
+      return { chartDiapasons: [], backgroundColor: backgroundColor, name: name };
     }
 
     var buildDiapason = function buildDiapason(data, from, to) {
@@ -956,11 +958,17 @@ function stackBar() {
     if (diapason.color) {
       return diapason.color;
     }
-    if (diapasonColors[diapason.name]) {
-      return diapasonColors[diapason.name];
+
+    var getDiapasonColorName = function getDiapasonColorName(diapason) {
+      return diapason.name + '-' + diapason.value;
+    };
+
+    if (diapasonColors[getDiapasonColorName(diapason)]) {
+      return diapasonColors[getDiapasonColorName(diapason)];
     }
-    diapasonColors[diapason.name] = colors.next().value;
-    return diapasonColors[diapason.name];
+
+    diapasonColors[getDiapasonColorName(diapason)] = colors.next().value;
+    return diapasonColors[getDiapasonColorName(diapason)];
   }
 
   exports.width = function (_width) {
@@ -1319,7 +1327,7 @@ function tooltip() {
     div.append('div').classed('tooltip-header', true).append('p').html(headerFormatter(selectedDate, data));
     div.append('hr');
 
-    data.slice().sort(sort).reverse().forEach(function (d) {
+    data.slice().sort(sort).forEach(function (d) {
       var container = div.append('div').classed('topic', true);
 
       container.append('div').classed('circle', true).style('background-color', d.color);

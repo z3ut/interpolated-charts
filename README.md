@@ -30,7 +30,7 @@ npm install interpolated-charts --save
 
 ```javascript
 import * as d3 from 'd3';
-import { line, chartEvents, verticalDivider, markers, tooltip } from 'interpolated-charts';
+import { line, stackBar, chartEvents, verticalDivider, markers, tooltip } from 'interpolated-charts';
 ```
 
 3. Import CSS
@@ -222,10 +222,10 @@ chartEvents.chartMouseClick - mouse click inside chart boundary. Arguments - { x
 Name | Description | Type | Default
 --- | --- | --- | ---
 width | Chart total width | Number | 700
-height | Chart total height | Number | 500
+height | Chart total height | Number | 120
 margin | Chart graph margin to outer bounds | { top: number, right: number, 
-marginBetweenStacks | Vertical margin between multiple stack bars | Number | 10
-backgroundColor | Chart background color | String | '#CCC'
+marginBetweenStacks | Vertical margin between multiple stack bars | Number | 0
+backgroundColor | Chart background color | String | '#CCCCCC'
 maxTimeRangeDifferenceToDraw | Max time in milliseconds to treat dataset xAxisTimeFormat | Date tick format for chart X Axis | d3.tickFormat | undefined
 mouseMoveTimeTreshold | Minimum time in milliseconds between chartMouseMove events | Number | 20
 xAxisDateFrom | Chart X Axis start date | Date | undefined

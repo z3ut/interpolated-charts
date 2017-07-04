@@ -56,7 +56,7 @@ import './index.css';
     .sort((a, b) => b.interpolatedValue - a.interpolatedValue);
 
   const tooltipPlugin = tooltip()
-    .sort((a, b) => a.interpolatedValue - b.interpolatedValue)
+    .sort((a, b) => b.interpolatedValue - a.interpolatedValue)
     .valueFormatter(({ interpolatedValue }) => `${interpolatedValue.toFixed(1)}°C`)
     .headerFormatter((selectedDate, data) => {
       const date = d3.timeFormat('%d-%m %H:%M')(selectedDate);
@@ -106,7 +106,7 @@ import './index.css';
 
 // stack bar multiple
 (() => {
-  const chartHeight = 140;
+  const chartHeight = 200;
 
   const verticalDividerPlugin = verticalDivider()
   const tooltipPlugin = tooltip({

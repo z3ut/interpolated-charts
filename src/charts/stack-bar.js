@@ -13,8 +13,8 @@ const chartEvents = {
 function stackBar({
     width = 700, height = 120,
     margin = { top: 20, right: 30, bottom: 40, left: 40 },
-    marginBetweenStacks = 10,
-    backgroundColor = '#CCC',
+    marginBetweenStacks = 0,
+    backgroundColor = '#CCCCCC',
     maxTimeRangeDifferenceToDraw = 1000 * 60 * 60 * 24 * 1.5,
     xAxisTimeFormat,
     mouseMoveTimeTreshold = 20,
@@ -64,8 +64,13 @@ function stackBar({
   }
 
   function createScales() {
-    const allChartDiapasons = [].concat.apply([], diapasons.map(d => d.chartDiapasons))// .map(d => [d.from, d.to]);
-    const allChartDates = allChartDiapasons.map(d => d.from).concat(allChartDiapasons.map(d => d.to));
+    const dateRanges = [].concat.apply([],
+      diapasons
+        .map(d => d.chartDiapasons)
+        .filter(d => d))
+      .map(d => [d.from, d.to]);
+
+    const allChartDates = [].concat.apply([], dateRanges);
 
     const xMin = xAxisDateFrom || d3.min(allChartDates);
     const xMax = xAxisDateTo || d3.max(allChartDates);
@@ -122,7 +127,6 @@ function stackBar({
 
     stackHolders.selectAll('.stack-holder')
       .data(d => d.chartDiapasons)
-
       .enter()
         .append('rect')
         .classed('stack-diapason', true)
@@ -131,7 +135,7 @@ function stackBar({
         .style('fill', (d) => d.color)
         .attr('width', d => moveNumToRange(Math.ceil(xScale(d.to) - xScale(d.from)),
           0, chartWidth - computeXPosition(d.from)))
-        .attr('height', stackHeight);  
+        .attr('height', stackHeight);
     
     stacks
       .exit()
@@ -274,7 +278,7 @@ function stackBar({
 
   function getStackDiapasons({ data, backgroundColor, name }) {
     if (!Array.isArray(data) || !data.length) {
-      return [];
+      return { chartDiapasons: [], backgroundColor, name };
     }
 
     const buildDiapason = (data, from, to) => ({
@@ -317,11 +321,15 @@ function stackBar({
     if (diapason.color) {
       return diapason.color;
     }
-    if (diapasonColors[diapason.name]) {
-      return diapasonColors[diapason.name];
+
+    const getDiapasonColorName = diapason => `${diapason.name}-${diapason.value}`;
+
+    if (diapasonColors[getDiapasonColorName(diapason)]) {
+      return diapasonColors[getDiapasonColorName(diapason)];
     }
-    diapasonColors[diapason.name] = colors.next().value;
-    return diapasonColors[diapason.name];
+
+    diapasonColors[getDiapasonColorName(diapason)] = colors.next().value;
+    return diapasonColors[getDiapasonColorName(diapason)];
   }
 
   exports.width = function(_width) {
