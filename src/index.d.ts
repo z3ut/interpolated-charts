@@ -294,8 +294,7 @@ declare module './index.js' {
     headerFormatter?: (selectedDate: Date, data: PointData[] | StackBarEventData[] ) => string;
     topicFormatter?: (data: PointData | StackBarEventData) => string;
     valueFormatter?: (data: PointData | StackBarEventData) => string;
-    sort?: (markerData1: PointData, markerData2: PointData) => number;
-    sort?: (markerData1: StackBarEventData, markerData2: StackBarEventData) => number;
+    sort?: (markerData1: PointData | StackBarEventData, markerData2: PointData | StackBarEventData) => number;
   }
 
   interface Tooltip {
@@ -345,8 +344,7 @@ declare module './index.js' {
     };
 
     sort: {
-      (sort: (markerData1: PointData, markerData2: PointData) => number): Tooltip;
-      (sort: (markerData1: StackBarEventData, markerData2: StackBarEventData) => number): Tooltip;
+      (sort: (markerData1: PointData | StackBarEventData, markerData2: PointData | StackBarEventData) => number): Tooltip;
       (): (markerData1: PointData | StackBarEventData, markerData2: PointData | StackBarEventData) => number;
     };
   }
