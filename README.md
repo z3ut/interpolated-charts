@@ -198,9 +198,12 @@ Array of
 ```typescript
 interface StackBarData {
   name: string;
-  color?: string;
-  date: Date;
-  value?: number;
+  backgroundColor?: string;
+  data: {
+    date: Date,
+    color?: string,
+    value: any
+  }[];
 }
 ```
 
@@ -221,6 +224,7 @@ Name | Description | Type | Default
 width | Chart total width | Number | 700
 height | Chart total height | Number | 500
 margin | Chart graph margin to outer bounds | { top: number, right: number, 
+marginBetweenStacks | Vertical margin between multiple stack bars | Number | 10
 backgroundColor | Chart background color | String | '#CCC'
 maxTimeRangeDifferenceToDraw | Max time in milliseconds to treat dataset xAxisTimeFormat | Date tick format for chart X Axis | d3.tickFormat | undefined
 mouseMoveTimeTreshold | Minimum time in milliseconds between chartMouseMove events | Number | 20

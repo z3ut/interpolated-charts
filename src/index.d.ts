@@ -145,13 +145,16 @@ declare module './index.js' {
     chartWidth: () => number;
   }
 
-  /* Stack chart */
+  /* Stack chart */ 
 
   interface StackBarData {
     name: string;
-    color?: string;
-    date: Date;
-    value?: number;
+    backgroundColor?: string;
+    data: {
+      date: Date,
+      color?: string,
+      value: any
+    }[];
   }
 
   interface StackBarConfig {
@@ -163,6 +166,7 @@ declare module './index.js' {
       bottom?: number,
       left?: number
     };
+    marginBetweenStacks?: number;
     backgroundColor?: string;
     maxTimeRangeDifferenceToDraw?: number;
     xAxisTimeFormat?: TickFormat;
@@ -192,6 +196,11 @@ declare module './index.js' {
       (margin: { top: number, right: number, bottom: number, left: number }): StackBarChart;
       (): { top: number, right: number, bottom: number, left: number };
     };
+
+    marginBetweenStacks: {
+      (marginBetweenStacks: number): StackBarChart;
+      (): number;
+    }
 
     backgroundColor: {
       (backgroundColor: string): StackBarChart;

@@ -160,6 +160,17 @@ describe('stack chart', () => {
       expect(setterResult).toBe(stackBarChart);
     });
 
+    it('should provide marginBetweenStacks getter and setter', () => {
+      const defaultMarginBetweenStacks = stackBarChart.marginBetweenStacks();
+      const testMarginBetweenStacks = 20;
+      const setterResult = stackBarChart.marginBetweenStacks(testMarginBetweenStacks);
+      const newMarginBetweenStacks = stackBarChart.marginBetweenStacks();
+
+      expect(defaultMarginBetweenStacks).not.toBe(newMarginBetweenStacks);
+      expect(testMarginBetweenStacks).toBe(newMarginBetweenStacks);
+      expect(setterResult).toBe(stackBarChart);
+    });
+
     it('should provide background color getter and setter', () => {
       const defaultBackgroundColor = stackBarChart.backgroundColor();
       const testBackgroundColor = '#332211';

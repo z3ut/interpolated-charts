@@ -348,6 +348,14 @@ function stackBar({
     return this;
   };
 
+  exports.marginBetweenStacks = function(_marginBetweenStacks) {
+    if (!arguments.length) {
+      return marginBetweenStacks;
+    }
+    marginBetweenStacks = _marginBetweenStacks;
+    return this;
+  };
+
   exports.backgroundColor = function(_backgroundColor) {
     if (!arguments.length) {
       return backgroundColor;

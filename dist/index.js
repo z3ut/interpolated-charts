@@ -685,6 +685,8 @@ function stackBar() {
       height = _ref$height === undefined ? 120 : _ref$height,
       _ref$margin = _ref.margin,
       margin = _ref$margin === undefined ? { top: 20, right: 30, bottom: 40, left: 40 } : _ref$margin,
+      _ref$marginBetweenSta = _ref.marginBetweenStacks,
+      marginBetweenStacks = _ref$marginBetweenSta === undefined ? 10 : _ref$marginBetweenSta,
       _ref$backgroundColor = _ref.backgroundColor,
       backgroundColor = _ref$backgroundColor === undefined ? '#CCC' : _ref$backgroundColor,
       _ref$maxTimeRangeDiff = _ref.maxTimeRangeDifferenceToDraw,
@@ -698,6 +700,7 @@ function stackBar() {
   var svg = void 0;
   var chartWidth = void 0,
       chartHeight = void 0;
+  var stackHeight = void 0;
   var xAxis = void 0;
   var xScale = void 0;
 
@@ -730,18 +733,25 @@ function stackBar() {
   }
 
   function initializeChartData(data) {
-    diapasons = getStackDiapasons(data);
+    var numberOfStacks = data.length;
+    stackHeight = (chartHeight - (numberOfStacks - 1) * marginBetweenStacks) / numberOfStacks;
+    diapasons = data.map(function (d) {
+      return getStackDiapasons(d);
+    });
   }
 
   function createScales() {
-    var _ref2;
+    var allChartDiapasons = [].concat.apply([], diapasons.map(function (d) {
+      return d.chartDiapasons;
+    })); // .map(d => [d.from, d.to]);
+    var allChartDates = allChartDiapasons.map(function (d) {
+      return d.from;
+    }).concat(allChartDiapasons.map(function (d) {
+      return d.to;
+    }));
 
-    var chartDates = (_ref2 = []).concat.apply(_ref2, _toConsumableArray(diapasons.map(function (d) {
-      return [d.from, d.to];
-    })));
-
-    var xMin = xAxisDateFrom || d3.min(chartDates);
-    var xMax = xAxisDateTo || d3.max(chartDates);
+    var xMin = xAxisDateFrom || d3.min(allChartDates);
+    var xMax = xAxisDateTo || d3.max(allChartDates);
 
     xScale = d3.scaleTime().domain([xMin, xMax]).range([0, chartWidth]);
   }
@@ -759,7 +769,7 @@ function stackBar() {
   }
 
   function drawRectangles() {
-    var stacks = svg.select('.data-stacks-container').selectAll('.stack')
+    var stacks = svg.select('.data-stacks-container').selectAll('.stack-holder')
     // reverse order - first path should be drawn above last
     .data(diapasons);
 
@@ -767,16 +777,25 @@ function stackBar() {
       return moveNumToRange(Math.trunc(xScale(date)), 0, chartWidth);
     };
 
-    stacks.enter().append('rect').classed('stack', true).style('fill', function (d) {
-      return d.color;
-    }).merge(stacks)
-    // trunc and ceil coords to prevent empty space between rectangles
-    // moveNumToRange to remove overflow
-    .attr('x', function (d) {
+    var stackHolders = stacks.enter().append('g').classed('stack-holder', true).merge(stacks).attr('transform', function (d, i) {
+      return 'translate(0, ' + i * (stackHeight + marginBetweenStacks) + ')';
+    }).attr('width', chartWidth).attr('height', stackHeight);
+
+    stackHolders.append('rect').attr('x', 0).attr('y', 0).attr('width', chartWidth).attr('height', stackHeight).style('fill', function (d) {
+      return d.backgroundColor;
+    });
+
+    stackHolders.selectAll('.stack-holder').data(function (d) {
+      return d.chartDiapasons;
+    }).enter().append('rect').classed('stack-diapason', true).attr('x', function (d) {
       return computeXPosition(d.from);
-    }).attr('y', 0).attr('width', function (d) {
+    }).attr('y', function () {
+      return 0;
+    }).style('fill', function (d) {
+      return d.color;
+    }).attr('width', function (d) {
       return moveNumToRange(Math.ceil(xScale(d.to) - xScale(d.from)), 0, chartWidth - computeXPosition(d.from));
-    }).attr('height', chartHeight);
+    }).attr('height', stackHeight);
 
     stacks.exit().remove();
   }
@@ -865,19 +884,30 @@ function stackBar() {
 
   function getClosestData(x) {
     var selectedDate = xScale.invert(x);
+    var closestData = [];
 
-    var closestData = diapasons.find(function (d) {
-      return d.from <= selectedDate && selectedDate <= d.to;
+    diapasons.forEach(function (d) {
+      var selectedDiapason = {
+        name: d.name,
+        interpolatedDate: selectedDate
+      };
+      var closestDiapason = d.chartDiapasons.find(function (d) {
+        return d.from <= selectedDate && selectedDate <= d.to;
+      });
+      if (closestDiapason) {
+        Object.assign(selectedDiapason, closestDiapason);
+      }
+      closestData.push(selectedDiapason);
     });
 
-    if (closestData) {
-      closestData.interpolatedDate = selectedDate;
-    }
-
-    return closestData ? [closestData] : [];
+    return closestData;
   }
 
-  function getStackDiapasons(data) {
+  function getStackDiapasons(_ref2) {
+    var data = _ref2.data,
+        backgroundColor = _ref2.backgroundColor,
+        name = _ref2.name;
+
     if (!Array.isArray(data) || !data.length) {
       return [];
     }
@@ -885,7 +915,6 @@ function stackBar() {
     var buildDiapason = function buildDiapason(data, from, to) {
       return {
         color: getDiapasonColor(data),
-        name: data.name,
         value: data.value,
         from: from || data.date,
         to: to || data.date
@@ -910,17 +939,17 @@ function stackBar() {
       sortedData.reduce(function (prev, curr) {
         var avgDate = new Date((prev.date.getTime() + curr.date.getTime()) / 2);
 
-        var leftDiapason = buildDiapason(prev, prev.date, Math.min(new Date(prev.date.getTime() + maxTimeRangeDifferenceToDraw), avgDate));
-        var rightDiapason = buildDiapason(curr, Math.max(new Date(curr.date.getTime() - maxTimeRangeDifferenceToDraw), avgDate), curr.date);
+        var leftDiapason = buildDiapason(prev, prev.date, d3.min([new Date(prev.date.getTime() + maxTimeRangeDifferenceToDraw), avgDate]));
+        var rightDiapason = buildDiapason(curr, d3.max([new Date(curr.date.getTime() - maxTimeRangeDifferenceToDraw), avgDate]), curr.date);
 
         chartDiapasons.push(leftDiapason, rightDiapason);
+
         return curr;
       });
     }
 
     chartDiapasons.push(buildRightDiapason(sortedData[sortedData.length - 1]));
-
-    return chartDiapasons;
+    return { chartDiapasons: chartDiapasons, backgroundColor: backgroundColor, name: name };
   }
 
   function getDiapasonColor(diapason) {
@@ -955,6 +984,14 @@ function stackBar() {
       return margin;
     }
     margin = _margin;
+    return this;
+  };
+
+  exports.marginBetweenStacks = function (_marginBetweenStacks) {
+    if (!arguments.length) {
+      return marginBetweenStacks;
+    }
+    marginBetweenStacks = _marginBetweenStacks;
     return this;
   };
 
