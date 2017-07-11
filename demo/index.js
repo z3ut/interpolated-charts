@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
-import { line, stackBar, chartEvents, verticalDivider, markers, tooltip } from '../src/index.js';
+import { line, bar, stackBar, chartEvents, verticalDivider, markers, tooltip } from '../src/index.js';
 import { lineChartData } from '../test/data/line-chart';
+import { barChartData } from '../test/data/bar-chart';
 import { stackBarMultipleData } from '../test/data/stack-bar';
 import './index.css';
 
@@ -101,6 +102,42 @@ import './index.css';
   const metadataContainer = d3.select('.configured-chart .metadata-container');
   metadataContainer.datum([]).call(verticalDividerPlugin);
   metadataContainer.datum([]).call(markersPlugin);
+  metadataContainer.datum([]).call(tooltipPlugin);
+})();
+
+// bar chart
+(() => {
+  const verticalDividerPlugin = verticalDivider();
+  const tooltipPlugin = tooltip({
+    valueFormatter: data => { 
+      return data.value === null ?
+        'no data' :
+        data.value + ' mm'
+    }
+  });
+
+  const barChart = bar()
+    // subscribe plugins to chart events
+    .on(chartEvents.chartMouseEnter, () => {
+      verticalDividerPlugin.show();
+    })
+    .on(chartEvents.chartMouseLeave, () => {
+      verticalDividerPlugin.remove();
+      tooltipPlugin.remove();
+    })
+    .on(chartEvents.chartMouseMove, (options) => {
+      // console.log(options);
+      verticalDividerPlugin.update(options);
+      tooltipPlugin.show(options);
+    });
+
+  // create chart with data
+  const chartContainer = d3.select('.bar-chart');
+  chartContainer.datum(barChartData).call(barChart);
+
+  // bind plugins to chart
+  const metadataContainer = d3.select('.bar-chart .metadata-container');
+  metadataContainer.datum([]).call(verticalDividerPlugin);
   metadataContainer.datum([]).call(tooltipPlugin);
 })();
 

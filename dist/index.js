@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 9);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -95,25 +95,27 @@ Object.defineProperty(exports, "__esModule", {
 
 var defaultColorSchema = ['#6aedc7', '#39c2c9', '#ffce00', '#ffa71a', '#f866b9', '#998ce3'];
 
-// babel-polyfill ~85KB minified
-// package minified bundle ~13KB
-// KISS
-
-// function* colorProvider(colorSchema = defaultColorSchema) {
-//   for (let currentColorNumber = 0; ; currentColorNumber = (currentColorNumber + 1) % colorSchema.length) {
-//     yield colorSchema[currentColorNumber];
-//   }
-// }
-
 function colorProvider() {
   var colorSchema = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultColorSchema;
 
   var currentColorNumber = 0;
+  var savedColors = {};
 
-  function next() {
+  /**
+   * Get new color. If it called with key param, returned value will be saved
+   * and will return every new call with same identificator.
+   * @param {string} [key] - Color identificator
+   */
+  function next(key) {
+    var color = arguments.length ? savedColors[key] = savedColors[key] || getNextColor() : getNextColor();
+
+    return { value: color, done: false };
+  }
+
+  function getNextColor() {
     var color = colorSchema[currentColorNumber];
     currentColorNumber = (currentColorNumber + 1) % colorSchema.length;
-    return { value: color, done: false };
+    return color;
   }
 
   function schema(_schema) {
@@ -206,6 +208,463 @@ exports.default = eventThreshold;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+function getDatePlusTime(date, time) {
+  return new Date(date.getTime() + time);
+}
+
+function getAverageDate(date1, date2) {
+  return new Date((date1.getTime() + date2.getTime()) / 2);
+}
+
+function boundNumberToRange(num, min, max) {
+  return Math.min(Math.max(num, min), max);
+}
+
+exports.getDatePlusTime = getDatePlusTime;
+exports.getAverageDate = getAverageDate;
+exports.boundNumberToRange = boundNumberToRange;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.chartEvents = exports.bar = undefined;
+
+var _d = __webpack_require__(0);
+
+var d3 = _interopRequireWildcard(_d);
+
+var _colorProvider = __webpack_require__(1);
+
+var _helpers = __webpack_require__(3);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var chartEvents = {
+  chartMouseEnter: 'chartMouseEnter',
+  chartMouseLeave: 'chartMouseLeave',
+  chartMouseMove: 'chartMouseMove',
+  chartMouseClick: 'chartMouseClick'
+};
+
+function bar() {
+  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      _ref$width = _ref.width,
+      width = _ref$width === undefined ? 700 : _ref$width,
+      _ref$height = _ref.height,
+      height = _ref$height === undefined ? 500 : _ref$height,
+      _ref$margin = _ref.margin,
+      margin = _ref$margin === undefined ? { top: 20, right: 30, bottom: 40, left: 40 } : _ref$margin,
+      _ref$setStackWidth = _ref.setStackWidth,
+      setStackWidth = _ref$setStackWidth === undefined ? function (chartWidth, numberOfBars) {
+    return chartWidth / numberOfBars - 20;
+  } : _ref$setStackWidth,
+      _ref$maxTimeRangeDiff = _ref.maxTimeRangeDifferenceToDraw,
+      maxTimeRangeDifferenceToDraw = _ref$maxTimeRangeDiff === undefined ? 1000 * 60 * 60 * 24 * 1.5 : _ref$maxTimeRangeDiff,
+      _ref$stackTimeDiapaso = _ref.stackTimeDiapason,
+      stackTimeDiapason = _ref$stackTimeDiapaso === undefined ? 1000 * 60 * 60 * 24 : _ref$stackTimeDiapaso,
+      xAxisTimeFormat = _ref.xAxisTimeFormat,
+      yAxisValueFormat = _ref.yAxisValueFormat,
+      xAxisDateFrom = _ref.xAxisDateFrom,
+      xAxisDateTo = _ref.xAxisDateTo,
+      yAxisValueFrom = _ref.yAxisValueFrom,
+      yAxisValueTo = _ref.yAxisValueTo;
+
+  var svg = void 0;
+  var chartWidth = void 0,
+      chartHeight = void 0;
+  var xAxis = void 0,
+      yAxis = void 0;
+  var xScale = void 0,
+      yScale = void 0;
+
+  var minDate = void 0,
+      maxDate = void 0,
+      maxValue = void 0;
+
+  var chartData = [];
+  var stackWidth = void 0,
+      stackBackgroundWidth = void 0;
+
+  var colors = (0, _colorProvider.colorProvider)();
+
+  var dispatcher = d3.dispatch(chartEvents.chartMouseEnter, chartEvents.chartMouseLeave, chartEvents.chartMouseMove, chartEvents.chartMouseClick);
+
+  function exports(selection) {
+    selection.each(function (data) {
+      chartWidth = exports.chartWidth();
+      chartHeight = exports.chartHeight();
+
+      buildSvg(this);
+
+      initializeChartData(data);
+      createScales();
+      createAxis();
+
+      drawAxis();
+      drawGridLines();
+      drawBars();
+      runDrawingAnimation();
+
+      subscribeEvents();
+    });
+  }
+
+  function initializeChartData(data) {
+    var chartDates = [].concat.apply([], data.map(function (d) {
+      return d.data;
+    })).map(function (p) {
+      return p.date;
+    });
+
+    minDate = xAxisDateFrom || d3.min(chartDates);
+    var maxDateConfig = xAxisDateTo || d3.max(chartDates);
+
+    var numberOfBars = 0;
+    maxDate = minDate;
+
+    var _loop = function _loop() {
+      var diapasonStart = maxDate;
+      maxDate = (0, _helpers.getDatePlusTime)(maxDate, stackTimeDiapason);
+      var avgDate = (0, _helpers.getAverageDate)(diapasonStart, maxDate);
+      numberOfBars++;
+
+      var currentStack = {
+        dataSum: 0,
+        dateFrom: diapasonStart,
+        dateTo: maxDate,
+        date: avgDate,
+        data: []
+      };
+
+      var filteredData = data.map(function (d) {
+        return {
+          name: d.name,
+          color: d.color || colors.next(d.name),
+          data: d.data.filter(function (d) {
+            return diapasonStart <= d.date && d.date < maxDate;
+          })
+        };
+      }).reduce(function (acc, curr) {
+        var currSet = {
+          name: curr.name,
+          // empty array or all missing values should return null
+          value: curr.data.reduce(function (acc, curr) {
+            return typeof curr.value === 'number' ? acc + curr.value : acc;
+          }, null),
+          previousValueSum: acc.dataSum,
+          color: curr.color,
+          date: avgDate,
+          dateFrom: diapasonStart,
+          dateTo: maxDate
+        };
+        acc.dataSum += currSet.value;
+        acc.data.push(currSet);
+        return acc;
+      }, currentStack);
+
+      chartData.push(filteredData);
+    };
+
+    do {
+      _loop();
+    } while (maxDate < maxDateConfig);
+
+    maxValue = d3.max(chartData.map(function (d) {
+      return d3.sum(d.data, function (d) {
+        return d.value;
+      });
+    }));
+
+    stackWidth = setStackWidth(chartWidth, numberOfBars);
+    stackBackgroundWidth = Math.round(chartWidth / numberOfBars);
+  }
+
+  function createScales() {
+    xScale = d3.scaleTime().domain([minDate, maxDate]).range([0, chartWidth]);
+
+    var yMin = yAxisValueFrom || 0;
+    var yMax = typeof yAxisValueTo === 'number' ? yAxisValueTo :
+    // add free space at top
+    maxValue * 1.05;
+
+    yScale = d3.scaleLinear().domain([yMin, yMax]).range([chartHeight, 0]);
+  }
+
+  function createAxis() {
+    xAxis = d3.axisBottom(xScale);
+
+    if (xAxisTimeFormat) {
+      xAxis.tickFormat(xAxisTimeFormat);
+    }
+
+    yAxis = d3.axisLeft(yScale);
+
+    if (yAxisValueFormat) {
+      yAxis.tickFormat(yAxisValueFormat);
+    }
+  }
+
+  function drawAxis() {
+    svg.select('.x-axis-container').append('g').classed('x-axis', true).attr('transform', 'translate(0, ' + chartHeight + ')').call(xAxis);
+
+    svg.select('.y-axis-container').append('g').classed('y-axis', true).call(yAxis);
+  }
+
+  function drawGridLines() {
+    svg.select('.grid-container').selectAll('.horizontal-grid-line').data(yScale.ticks()).enter().append('line').classed('horizontal-grid-line', true).attr('x1', 0).attr('x2', chartWidth).attr('y1', function (d) {
+      return yScale(d);
+    }).attr('y2', function (d) {
+      return yScale(d);
+    });
+
+    svg.select('.grid-container').selectAll('.vertical-grid-line').data(xScale.ticks()).enter().append('line').classed('vertical-grid-line', true).attr('x1', function (d) {
+      return xScale(d);
+    }).attr('x2', function (d) {
+      return xScale(d);
+    }).attr('y1', 0).attr('y2', chartHeight);
+  }
+
+  function drawBars() {
+    var containers = svg.select('.data-bar-container').selectAll('.bar').data(chartData).enter().append('g');
+
+    containers.append('rect').classed('stack-background', true).attr('x', function (d) {
+      return xScale(d.date);
+    }).attr('y', 0).attr('width', stackBackgroundWidth).attr('height', chartHeight).attr('transform', 'translate(-' + stackBackgroundWidth / 2 + ', 0)');
+
+    containers.selectAll('.stack').data(function (d) {
+      return d.data;
+    }).enter().append('rect').classed('stack', true).attr('class', 'bar').attr('x', function (d) {
+      return xScale(d.date);
+    }).attr('y', function (d) {
+      return yScale(d.value + d.previousValueSum);
+    }).attr('width', stackWidth)
+    // zero or positive - handle case when y axis min value > current drawing y
+    .attr('height', function (d) {
+      return Math.max(chartHeight - yScale(d.value), 0);
+    }).attr('transform', 'translate(-' + stackWidth / 2 + ', 0)').attr('fill', function (d) {
+      return d.color;
+    });
+  }
+
+  function runDrawingAnimation() {
+    var maskingRectangle = svg.append('rect').style('fill', 'white').attr('width', chartWidth).attr('height', chartHeight).attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')').attr('x', 0).attr('y', 0);
+
+    maskingRectangle.transition().duration(1000).ease(d3.easeQuadInOut).attr('x', chartWidth).on('end', function () {
+      return maskingRectangle.remove();
+    });
+  }
+
+  function buildSvg(container) {
+    if (!svg) {
+      svg = d3.select(container).append('svg').classed('bar-chart', true);
+
+      buildContainerGroups();
+    }
+
+    svg.attr('width', width).attr('height', height);
+  }
+
+  function buildContainerGroups() {
+    var container = svg.append('g').classed('container-group', true).attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
+
+    container.append('g').classed('grid-container', true);
+
+    container.append('g').classed('x-axis-container', true);
+
+    container.append('g').classed('y-axis-container', true);
+
+    container.append('g').classed('data-bar-container', true);
+
+    container.append('g').classed('metadata-container', true);
+  }
+
+  function subscribeEvents() {
+    svg.on('mousemove', mouseMove);
+    svg.on('mouseenter', mouseEnter);
+    svg.on('mouseleave', mouseLeave);
+    svg.on('click', mouseClick);
+  }
+
+  function mouseMove() {
+    var options = getMouseEventOptions.apply(undefined, _toConsumableArray(d3.mouse(this)));
+    dispatcher.call(chartEvents.chartMouseMove, this, options);
+  }
+
+  function mouseClick() {
+    var options = getMouseEventOptions.apply(undefined, _toConsumableArray(d3.mouse(this)));
+    dispatcher.call(chartEvents.chartMouseClick, this, options);
+  }
+
+  function mouseEnter() {
+    dispatcher.call.apply(dispatcher, [chartEvents.chartMouseEnter].concat(_toConsumableArray(d3.mouse(this))));
+  }
+
+  function mouseLeave() {
+    dispatcher.call.apply(dispatcher, [chartEvents.chartMouseLeave].concat(_toConsumableArray(d3.mouse(this))));
+  }
+
+  function getMouseEventOptions(x, y) {
+    // coords inside of chart
+    x = (0, _helpers.boundNumberToRange)(x - margin.left, 0, chartWidth);
+    y = (0, _helpers.boundNumberToRange)(y - margin.top, 0, chartHeight);
+
+    var data = getClosestData(x);
+    var selectedDate = xScale.invert(x);
+
+    var diapasonStart = minDate;
+    var diapasonEnd = (0, _helpers.getDatePlusTime)(diapasonStart, stackTimeDiapason);
+
+    while (selectedDate > diapasonEnd) {
+      diapasonStart = diapasonEnd;
+      diapasonEnd = (0, _helpers.getDatePlusTime)(diapasonStart, stackTimeDiapason);
+    }
+
+    return { x: x, y: y, selectedDate: selectedDate, diapasonStart: diapasonStart, diapasonEnd: diapasonEnd, data: data };
+  }
+
+  function getClosestData(x) {
+    var selectedDate = xScale.invert(x);
+    var stackData = chartData.find(function (d) {
+      return d.dateFrom <= selectedDate && selectedDate <= d.dateTo;
+    });
+    return stackData.data;
+  }
+
+  exports.width = function (_width) {
+    if (!arguments.length) {
+      return width;
+    }
+    width = _width;
+    return this;
+  };
+
+  exports.height = function (_height) {
+    if (!arguments.length) {
+      return height;
+    }
+    height = _height;
+    return this;
+  };
+
+  exports.margin = function (_margin) {
+    if (!arguments.length) {
+      return margin;
+    }
+    margin = _margin;
+    return this;
+  };
+
+  exports.setStackWidth = function (_setStackWidth) {
+    if (!arguments.length) {
+      return setStackWidth;
+    }
+    setStackWidth = _setStackWidth;
+    return this;
+  };
+
+  exports.on = function () {
+    dispatcher.on.apply(dispatcher, arguments);
+    return this;
+  };
+
+  exports.maxTimeRangeDifferenceToDraw = function (_maxTimeRangeDifferenceToDraw) {
+    if (!arguments.length) {
+      return maxTimeRangeDifferenceToDraw;
+    }
+    maxTimeRangeDifferenceToDraw = _maxTimeRangeDifferenceToDraw;
+    return this;
+  };
+
+  exports.stackTimeDiapason = function (_stackTimeDiapason) {
+    if (!arguments.length) {
+      return stackTimeDiapason;
+    }
+    stackTimeDiapason = _stackTimeDiapason;
+    return this;
+  };
+
+  exports.xAxisTimeFormat = function (_xAxisTimeFormat) {
+    if (!arguments.length) {
+      return xAxisTimeFormat;
+    }
+    xAxisTimeFormat = _xAxisTimeFormat;
+    return this;
+  };
+
+  exports.yAxisValueFormat = function (_yAxisValueFormat) {
+    if (!arguments.length) {
+      return yAxisValueFormat;
+    }
+    yAxisValueFormat = _yAxisValueFormat;
+    return this;
+  };
+
+  exports.xAxisDateFrom = function (_xAxisDateFrom) {
+    if (!arguments.length) {
+      return xAxisDateFrom;
+    }
+    xAxisDateFrom = _xAxisDateFrom;
+    return this;
+  };
+
+  exports.xAxisDateTo = function (_xAxisDateTo) {
+    if (!arguments.length) {
+      return xAxisDateTo;
+    }
+    xAxisDateTo = _xAxisDateTo;
+    return this;
+  };
+
+  exports.yAxisValueFrom = function (_yAxisValueFrom) {
+    if (!arguments.length) {
+      return yAxisValueFrom;
+    }
+    yAxisValueFrom = _yAxisValueFrom;
+    return this;
+  };
+
+  exports.curve = function (_yAxisValueTo) {
+    if (!arguments.length) {
+      return yAxisValueTo;
+    }
+    yAxisValueTo = _yAxisValueTo;
+    return this;
+  };
+
+  exports.chartHeight = function () {
+    return height - margin.top - margin.bottom;
+  };
+
+  exports.chartWidth = function () {
+    return width - margin.left - margin.right;
+  };
+
+  return exports;
+}
+
+exports.bar = bar;
+exports.chartEvents = chartEvents;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.chartEvents = exports.line = undefined;
 
 var _d = __webpack_require__(0);
@@ -214,7 +673,7 @@ var d3 = _interopRequireWildcard(_d);
 
 var _colorProvider = __webpack_require__(1);
 
-var _svgCalculating = __webpack_require__(10);
+var _svgCalculating = __webpack_require__(12);
 
 var _svgCalculating2 = _interopRequireDefault(_svgCalculating);
 
@@ -644,7 +1103,7 @@ exports.line = line;
 exports.chartEvents = chartEvents;
 
 /***/ }),
-/* 4 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -660,6 +1119,8 @@ var _d = __webpack_require__(0);
 var d3 = _interopRequireWildcard(_d);
 
 var _colorProvider = __webpack_require__(1);
+
+var _helpers = __webpack_require__(3);
 
 var _eventThreshold = __webpack_require__(2);
 
@@ -708,7 +1169,6 @@ function stackBar() {
   var diapasons = void 0;
 
   var colors = (0, _colorProvider.colorProvider)();
-  var diapasonColors = {};
   var events = (0, _eventThreshold2.default)(mouseMoveTimeTreshold);
 
   var dispatcher = d3.dispatch(chartEvents.chartMouseEnter, chartEvents.chartMouseLeave, chartEvents.chartMouseMove, chartEvents.chartMouseClick);
@@ -916,18 +1376,11 @@ function stackBar() {
 
     var buildDiapason = function buildDiapason(data, from, to) {
       return {
-        color: getDiapasonColor(data),
+        color: data.color || colors.next(data.name + '-' + data.value).value,
         value: data.value,
         from: from || data.date,
         to: to || data.date
       };
-    };
-
-    var buildLeftDiapason = function buildLeftDiapason(data) {
-      return buildDiapason(data, new Date(data.date.getTime() - maxTimeRangeDifferenceToDraw), data.date);
-    };
-    var buildRightDiapason = function buildRightDiapason(data) {
-      return buildDiapason(data, data.date, new Date(data.date.getTime() + maxTimeRangeDifferenceToDraw));
     };
 
     var sortedData = data.sort(function (d1, d2) {
@@ -935,14 +1388,18 @@ function stackBar() {
     });
     var chartDiapasons = [];
 
-    chartDiapasons.push(buildLeftDiapason(sortedData[0]));
+    var leftDiapason = buildDiapason(sortedData[0], (0, _helpers.getDatePlusTime)(sortedData[0].date, -maxTimeRangeDifferenceToDraw), sortedData[0].date);
+
+    chartDiapasons.push(leftDiapason);
 
     if (sortedData.length > 1) {
       sortedData.reduce(function (prev, curr) {
-        var avgDate = new Date((prev.date.getTime() + curr.date.getTime()) / 2);
+        var avgDate = (0, _helpers.getAverageDate)(prev.date, curr.date);
+        var leftDate = d3.min([(0, _helpers.getDatePlusTime)(prev.date, maxTimeRangeDifferenceToDraw), avgDate]);
+        var rightDate = d3.max([(0, _helpers.getDatePlusTime)(curr.date, -maxTimeRangeDifferenceToDraw), avgDate]);
 
-        var leftDiapason = buildDiapason(prev, prev.date, d3.min([new Date(prev.date.getTime() + maxTimeRangeDifferenceToDraw), avgDate]));
-        var rightDiapason = buildDiapason(curr, d3.max([new Date(curr.date.getTime() - maxTimeRangeDifferenceToDraw), avgDate]), curr.date);
+        var leftDiapason = buildDiapason(prev, prev.date, leftDate);
+        var rightDiapason = buildDiapason(curr, rightDate, curr.date);
 
         chartDiapasons.push(leftDiapason, rightDiapason);
 
@@ -950,25 +1407,11 @@ function stackBar() {
       });
     }
 
-    chartDiapasons.push(buildRightDiapason(sortedData[sortedData.length - 1]));
+    var lastData = sortedData[sortedData.length - 1];
+    var rightDiapason = buildDiapason(lastData, lastData.date, (0, _helpers.getDatePlusTime)(lastData.date, maxTimeRangeDifferenceToDraw));
+    chartDiapasons.push(rightDiapason);
+
     return { chartDiapasons: chartDiapasons, backgroundColor: backgroundColor, name: name };
-  }
-
-  function getDiapasonColor(diapason) {
-    if (diapason.color) {
-      return diapason.color;
-    }
-
-    var getDiapasonColorName = function getDiapasonColorName(diapason) {
-      return diapason.name + '-' + diapason.value;
-    };
-
-    if (diapasonColors[getDiapasonColorName(diapason)]) {
-      return diapasonColors[getDiapasonColorName(diapason)];
-    }
-
-    diapasonColors[getDiapasonColorName(diapason)] = colors.next().value;
-    return diapasonColors[getDiapasonColorName(diapason)];
   }
 
   exports.width = function (_width) {
@@ -1074,7 +1517,7 @@ exports.stackBar = stackBar;
 exports.chartEvents = chartEvents;
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1229,7 +1672,7 @@ function markers() {
 exports.default = markers;
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1327,14 +1770,18 @@ function tooltip() {
     div.append('div').classed('tooltip-header', true).append('p').html(headerFormatter(selectedDate, data));
     div.append('hr');
 
-    data.slice().sort(sort).forEach(function (d) {
-      var container = div.append('div').classed('topic', true);
+    var topics = div.selectAll('.topic').data(data.slice().sort(sort)).enter().append('div').classed('topic', true);
 
-      container.append('div').classed('circle', true).style('background-color', d.color);
+    topics.append('div').classed('circle', true).style('background-color', function (d) {
+      return d.color;
+    });
 
-      container.append('div').classed('topic-name', true).html(topicFormatter(d));
+    topics.append('div').classed('topic-name', true).html(function (d) {
+      return topicFormatter(d);
+    });
 
-      container.append('div').classed('topic-value', true).html(valueFormatter(d));
+    topics.append('div').classed('topic-value', true).html(function (d) {
+      return valueFormatter(d);
     });
 
     var divHeight = div.node().getBoundingClientRect().height;
@@ -1423,7 +1870,7 @@ function tooltip() {
 exports.default = tooltip;
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1491,13 +1938,13 @@ function verticalDivider() {
 exports.default = verticalDivider;
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1506,29 +1953,32 @@ exports.default = verticalDivider;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.tooltip = exports.markers = exports.verticalDivider = exports.chartEvents = exports.stackBar = exports.line = undefined;
+exports.tooltip = exports.markers = exports.verticalDivider = exports.chartEvents = exports.stackBar = exports.bar = exports.line = undefined;
 
-var _line = __webpack_require__(3);
+var _line = __webpack_require__(5);
 
-var _stackBar = __webpack_require__(4);
+var _bar = __webpack_require__(4);
 
-var _verticalDivider = __webpack_require__(7);
+var _stackBar = __webpack_require__(6);
+
+var _verticalDivider = __webpack_require__(9);
 
 var _verticalDivider2 = _interopRequireDefault(_verticalDivider);
 
-var _markers = __webpack_require__(5);
+var _markers = __webpack_require__(7);
 
 var _markers2 = _interopRequireDefault(_markers);
 
-var _tooltip = __webpack_require__(6);
+var _tooltip = __webpack_require__(8);
 
 var _tooltip2 = _interopRequireDefault(_tooltip);
 
-__webpack_require__(8);
+__webpack_require__(10);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.line = _line.line;
+exports.bar = _bar.bar;
 exports.stackBar = _stackBar.stackBar;
 exports.chartEvents = _line.chartEvents;
 exports.verticalDivider = _verticalDivider2.default;
@@ -1536,7 +1986,7 @@ exports.markers = _markers2.default;
 exports.tooltip = _tooltip2.default;
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

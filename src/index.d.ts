@@ -46,8 +46,8 @@ declare module './index.js' {
     interpolationMaxIterationCount?: number;
     interpolationAccuracy?: number;
     mouseMoveTimeTreshold?: number;
-    xAxisDateFrom: Date;
-    xAxisDateTo: Date;
+    xAxisDateFrom?: Date;
+    xAxisDateTo?: Date;
   }
 
   interface MouseEventChartData {
@@ -119,12 +119,119 @@ declare module './index.js' {
     }
 
     xAxisDateFrom: {
-      (xAxisDateFrom: Date): StackBarChart;
+      (xAxisDateFrom: Date): LineChart;
       (): Date;
     };
 
     xAxisDateTo: {
-      (xAxisDateTo: Date): StackBarChart;
+      (xAxisDateTo: Date): LineChart;
+      (): Date;
+    };
+
+    chartHeight: () => number;
+    chartWidth: () => number;
+  }
+
+  /* Bar chart */
+
+  interface BarChartConfig {
+    width?: number;
+    height?: number;
+    margin?: {
+      top?: number,
+      right?: number,
+      bottom?: number,
+      left?: number
+    };
+    setStackWidth?: (chartWidth:number, numberOfBars: number) => number;
+    maxTimeRangeDifferenceToDraw?: number;
+    stackTimeDiapason?: number;
+    xAxisTimeFormat?: TickFormat;
+    yAxisValueFormat?: TickFormat;
+    xAxisDateFrom?: Date;
+    xAxisDateTo?: Date;
+    yAxisValueFrom?: number;
+    yAxisValueTo?: number;
+  }
+
+  interface MouseEventBarChartData {
+    dataSum: number;
+    dateFrom: Date;
+    dateTo: Date;
+    date: Date;
+    data: {
+      name: string;
+      value: number;
+      previousValueSum: number;
+      color: string;
+      date: Date;
+      dateFrom: Date;
+      dateTo: Date;
+    }
+  }
+
+  interface BarChart {
+    (selection: any): void;
+
+    width: {
+      (width: number): BarChart;
+      (): number;
+    };
+
+    height: {
+      (height: number): BarChart;
+      (): number;
+    };
+
+    margin: {
+      (margin: { top: number, right: number, bottom: number, left: number }): BarChart;
+      (): { top: number, right: number, bottom: number, left: number };
+    };
+
+    setStackMargin: {
+      (setStackMargin: (chartWidth:number, numberOfBars: number) => number): BarChart;
+      (): (chartWidth:number, numberOfBars: number) => number;
+    }
+
+    on: (event: string, callback: (...args: any[]) => void, ...args: any[]) => BarChart;
+
+    maxTimeRangeDifferenceToDraw: {
+      (maxTimeRangeDifferenceToDraw: number): BarChart;
+      (): number;
+    };
+
+    stackTimeDiapason: {
+      (stackTimeDiapason: number): BarChart;
+      (): number;
+    };
+
+    xAxisTimeFormat: {
+      (xAxisTimeFormat: TickFormat): BarChart;
+      (): TickFormat;
+    };
+
+    yAxisValueFormat: {
+      (yAxisValueFormat: TickFormat): BarChart;
+      (): TickFormat;
+    };
+
+    xAxisDateFrom: {
+      (curve: d3.CurveFactory): BarChart;
+      (): d3.CurveFactory;
+    }
+
+    xAxisDateTo: {
+      (interpolationMaxIterationCount: number): BarChart;
+      (): number;
+    }
+
+    yAxisValueFrom: {
+      (xAxisDateFrom: Date): BarChart;
+      (): Date;
+    };
+
+    yAxisValueTo: {
+      (xAxisDateTo: Date): BarChart;
       (): Date;
     };
 
@@ -367,6 +474,7 @@ declare module './index.js' {
   }
 
   export function line(config?: LineChartConfig): LineChart;
+  export function bar(config?: BarChartConfig): BarChart;
   export function stackBar(config?: StackBarConfig): StackBarChart;
 
   export const chartEvents: {

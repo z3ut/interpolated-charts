@@ -86,26 +86,27 @@ function tooltip({
     div
       .append('hr');
 
-    data.slice().sort(sort).forEach(d => {
-      const container = div
+    const topics = div
+      .selectAll('.topic')
+      .data(data.slice().sort(sort))
+      .enter()
         .append('div')
         .classed('topic', true);
 
-      container
-        .append('div')
-        .classed('circle', true)
-        .style('background-color', d.color);
+    topics
+      .append('div') 
+      .classed('circle', true)
+      .style('background-color', d => d.color);
 
-      container
-        .append('div')
-        .classed('topic-name', true)
-        .html(topicFormatter(d));
+    topics
+      .append('div')
+      .classed('topic-name', true)
+      .html(d => topicFormatter(d));
 
-      container
-        .append('div')
-        .classed('topic-value', true)
-        .html(valueFormatter(d));
-    });
+    topics
+      .append('div')
+      .classed('topic-value', true)
+      .html(d => valueFormatter(d));
 
     const divHeight = div
       .node()

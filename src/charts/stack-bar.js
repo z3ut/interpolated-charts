@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 
 import { colorProvider } from '../utils/color-provider';
+import { getDatePlusTime, getAverageDate } from '../utils/helpers';
 import eventThreshold from '../utils/event-threshold';
 
 const chartEvents = {
@@ -30,7 +31,6 @@ function stackBar({
   let diapasons;
 
   const colors = colorProvider();
-  const diapasonColors = {};
   let events = eventThreshold(mouseMoveTimeTreshold);
 
   const dispatcher = d3.dispatch(chartEvents.chartMouseEnter,
@@ -133,7 +133,8 @@ function stackBar({
         .attr('x', d => computeXPosition(d.from))
         .attr('y', () => 0)
         .style('fill', (d) => d.color)
-        .attr('width', d => moveNumToRange(Math.ceil(xScale(d.to) - xScale(d.from)),
+        .attr('width', d => moveNumToRange(
+          Math.ceil(xScale(d.to) - xScale(d.from)),
           0, chartWidth - computeXPosition(d.from)))
         .attr('height', stackHeight);
     
@@ -282,30 +283,38 @@ function stackBar({
     }
 
     const buildDiapason = (data, from, to) => ({
-      color: getDiapasonColor(data),
+      color: data.color || colors.next(`${data.name}-${data.value}`).value,
       value: data.value,
       from: from || data.date,
       to: to || data.date
     });
 
-    const buildLeftDiapason = data => 
-      buildDiapason(data, new Date(data.date.getTime() - maxTimeRangeDifferenceToDraw), data.date);
-    const buildRightDiapason = data => 
-      buildDiapason(data, data.date, new Date(data.date.getTime() + maxTimeRangeDifferenceToDraw));
-
-    const sortedData = data
-      .sort((d1, d2) => d1.date - d2.date);
+    const sortedData = data.sort((d1, d2) => d1.date - d2.date);
     const chartDiapasons = [];
 
-    chartDiapasons.push(buildLeftDiapason(sortedData[0]));
+    const leftDiapason = buildDiapason(
+      sortedData[0], 
+      getDatePlusTime(sortedData[0].date, -maxTimeRangeDifferenceToDraw),
+      sortedData[0].date
+    );
+    
+    chartDiapasons.push(leftDiapason);
 
     if (sortedData.length > 1) {
       sortedData
         .reduce((prev, curr) => {
-          const avgDate = new Date((prev.date.getTime() + curr.date.getTime()) / 2);
+          const avgDate = getAverageDate(prev.date, curr.date);
+          const leftDate = d3.min([
+            getDatePlusTime(prev.date, maxTimeRangeDifferenceToDraw),
+            avgDate
+          ]);
+          const rightDate = d3.max([
+            getDatePlusTime(curr.date, -maxTimeRangeDifferenceToDraw),
+            avgDate
+          ]);
 
-          const leftDiapason = buildDiapason(prev, prev.date, d3.min([new Date(prev.date.getTime() + maxTimeRangeDifferenceToDraw), avgDate]));
-          const rightDiapason = buildDiapason(curr, d3.max([new Date(curr.date.getTime() - maxTimeRangeDifferenceToDraw), avgDate]), curr.date);
+          const leftDiapason = buildDiapason(prev, prev.date, leftDate);
+          const rightDiapason = buildDiapason(curr, rightDate, curr.date);
 
           chartDiapasons.push(leftDiapason, rightDiapason);
 
@@ -313,23 +322,15 @@ function stackBar({
         });
     }
 
-    chartDiapasons.push(buildRightDiapason(sortedData[sortedData.length - 1]));
+    const lastData = sortedData[sortedData.length - 1];
+    const rightDiapason = buildDiapason(
+      lastData,
+      lastData.date,
+      getDatePlusTime(lastData.date, maxTimeRangeDifferenceToDraw)
+    );
+    chartDiapasons.push(rightDiapason);
+    
     return { chartDiapasons, backgroundColor, name };
-  }
-
-  function getDiapasonColor(diapason) {
-    if (diapason.color) {
-      return diapason.color;
-    }
-
-    const getDiapasonColorName = diapason => `${diapason.name}-${diapason.value}`;
-
-    if (diapasonColors[getDiapasonColorName(diapason)]) {
-      return diapasonColors[getDiapasonColorName(diapason)];
-    }
-
-    diapasonColors[getDiapasonColorName(diapason)] = colors.next().value;
-    return diapasonColors[getDiapasonColorName(diapason)];
   }
 
   exports.width = function(_width) {

@@ -179,18 +179,18 @@ mouseMoveTimeTreshold | Minimum time in milliseconds between chartMouseMove even
 xAxisDateFrom | Chart X Axis start date | Date | undefined
 xAxisDateTo | Chart X Axis end date | Date | undefined
 
-### Stack bar
+### Bar chart
 
 #### Usage
 
 ```javascript
-// create stack bar
-const stackBarChart = stackBar();
+// create bar chart
+const barChart = bar();
 
-const stackBarContainer = d3.select('.stack-bar');
-const stackBarData = [/* StackBarData[] */];
+const barChartContainer = d3.select('.bar-bar');
+const barChartData = [/* PathDataSet[] */];
 // bind selection with data and call chart creation
-stackBarContainer.datum(stackBarData).call(stackBarChart);
+barChartContainer.datum(barChartData).call(barChart);
 ```
 
 #### Chart data format
@@ -213,7 +213,58 @@ chartEvents.chartMouseEnter - mouse entered chart boundary. Arguments - mouse co
 
 chartEvents.chartMouseLeave - mouse leaved chart boundary. Arguments - mouse coordinates x, y relative to chart;
 
-chartEvents.chartMouseMove - mouse moved inside chart boundary. Event treshhold (mouseMoveTimeTreshold, ms) - min time between events. Arguments - { x: number, y: number, selectedDate: Date, data: StackBarEventData[] }. data - array of closest chart points data based on mouse current position:
+chartEvents.chartMouseMove - mouse moved inside chart boundary. Event treshhold (mouseMoveTimeTreshold, ms) - min time between events. Arguments - { x: number, y: number, selectedDate: Date, data: MouseEventBarChartData[] }. data - array of closest chart points data based on mouse current position:
+
+chartEvents.chartMouseClick - mouse click inside chart boundary. Arguments - { x: number, y: number, selectedDate: Date, data: MouseEventBarChartData[] }.
+
+#### Options
+
+Name | Description | Type | Default
+--- | --- | --- | ---
+width | Chart total width | Number | 700
+height | Chart total height | Number | 120
+margin | Chart graph margin to outer bounds | { top: number, right: number, 
+setStackWidth | Function to compute stack width | Function | (chartWidth, numberOfBars) => chartWidth / numberOfBars - 20
+maxTimeRangeDifferenceToDraw | Max time in milliseconds to treat dataset points without breaking | Number | 1000 * 60 * 60 * 24 * 1.5 (1.5 days)
+stackTimeDiapason | Time diapason for one stack | Number | 1000 * 60 * 60 * 24
+xAxisTimeFormat | Date tick format for chart X Axis | d3.tickFormat | undefined
+yAxisValueFormat | Value tick format for chart Y Axis | d3.tickFormat | undefined
+xAxisDateFrom | Chart X Axis start date | Date | undefined
+xAxisDateTo | Chart X Axis end date | Date | undefined
+yAxisValueFrom | Chart Y Axis start value | Number | undefined
+yAxisValueTo | Chart Y Axis end value | Number | undefined
+
+### Stack bar
+
+#### Usage
+
+```javascript
+// create stack bar
+const stackBarChart = stackBar();
+
+const stackBarContainer = d3.select('.stack-bar');
+const stackBarData = [/* StackBarData[] */];
+// bind selection with data and call chart creation
+stackBarContainer.datum(stackBarData).call(stackBarChart);
+```
+
+#### Chart data format
+Array of
+```typescript
+interface PathDataSet {
+  name: string;
+  color?: string;
+  data: { date: Date, value: number }[];
+}
+```
+
+#### Events
+
+chartEvents.chartMouseEnter - mouse entered chart boundary. Arguments - mouse coordinates x, y relative to chart;
+
+chartEvents.chartMouseLeave - mouse leaved chart boundary. Arguments - mouse coordinates x, y relative to chart;
+
+chartEvents.chartMouseMove - mouse moved inside chart boundary. Event treshhold (mouseMoveTimeTreshold, ms) - min time between events. Arguments - { x: number, y: number, selectedDate: Date, diapasonStart: Date, diapasonEnd: Date, data: MouseEventBarChartData[] }. data - array of closest chart points data based on mouse current position:
 
 chartEvents.chartMouseClick - mouse click inside chart boundary. Arguments - { x: number, y: number, selectedDate: Date, data: StackBarEventData[] }.
 
@@ -226,8 +277,9 @@ height | Chart total height | Number | 120
 margin | Chart graph margin to outer bounds | { top: number, right: number, 
 marginBetweenStacks | Vertical margin between multiple stack bars | Number | 0
 backgroundColor | Chart background color | String | '#CCCCCC'
-maxTimeRangeDifferenceToDraw | Max time in milliseconds to treat dataset xAxisTimeFormat | Date tick format for chart X Axis | d3.tickFormat | undefined
+maxTimeRangeDifferenceToDraw | Max time in milliseconds to treat dataset points without breaking | Number | 1000 * 60 * 60 * 24 * 1.5 (1.5 days)
 mouseMoveTimeTreshold | Minimum time in milliseconds between chartMouseMove events | Number | 20
+xAxisTimeFormat | Date tick format for chart X Axis | d3.tickFormat | undefined
 xAxisDateFrom | Chart X Axis start date | Date | undefined
 xAxisDateTo | Chart X Axis end date | Date | undefined
 

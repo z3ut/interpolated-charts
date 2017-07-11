@@ -8,23 +8,27 @@ const defaultColorSchema = [
   '#998ce3'
 ];
 
-// babel-polyfill ~85KB minified
-// package minified bundle ~13KB
-// KISS
-
-// function* colorProvider(colorSchema = defaultColorSchema) {
-//   for (let currentColorNumber = 0; ; currentColorNumber = (currentColorNumber + 1) % colorSchema.length) {
-//     yield colorSchema[currentColorNumber];
-//   }
-// }
-
 function colorProvider(colorSchema = defaultColorSchema) {
   let currentColorNumber = 0;
+  const savedColors = {};
 
-  function next() {
+  /**
+   * Get new color. If it called with key param, returned value will be saved
+   * and will return every new call with same identificator.
+   * @param {string} [key] - Color identificator
+   */
+  function next(key) {
+    const color = arguments.length ?
+      savedColors[key] = savedColors[key] || getNextColor() :
+      getNextColor();
+
+    return { value: color, done: false };
+  }
+
+  function getNextColor() {
     const color = colorSchema[currentColorNumber];
     currentColorNumber = (currentColorNumber + 1) % colorSchema.length;
-    return { value: color, done: false };
+    return color;
   }
 
   function schema(_schema) {

@@ -13,6 +13,37 @@
   stroke-width: 1;
   stroke-dasharray: 4, 4;
 }
+.bar-chart .horizontal-grid-line {
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke: #EFF2F5;
+  stroke-width: 1;
+  stroke-dasharray: 4, 4;
+}
+
+.bar-chart .vertical-grid-line {
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke: #EFF2F5;
+  stroke-width: 1;
+  stroke-dasharray: 4, 4;
+}
+
+.stack-background {
+  fill: #FFF;
+  opacity: 0;
+  pointer-events: all;
+  transition: all .2s ease;
+}
+
+.stack-background:hover {
+  fill: #EEE;
+  opacity: 1;
+}
+
+.bar {
+  pointer-events: none;
+}
 .metadata-container .tooltip {
   fill: #FFF;
 }
@@ -65,6 +96,7 @@
 }
 .metadata-container .divider {
   stroke: grey;
+  pointer-events: none;
 }
 
 .container {

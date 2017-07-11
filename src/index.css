@@ -1,4 +1,5 @@
 @import './charts/line.css';
+@import './charts/bar.css';
 
 @import './plugins/tooltip.css';
 @import './plugins/vertical-divider.css';

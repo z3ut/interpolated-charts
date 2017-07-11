@@ -1,3 +1,4 @@
 .metadata-container .divider {
   stroke: grey;
+  pointer-events: none;
 }
