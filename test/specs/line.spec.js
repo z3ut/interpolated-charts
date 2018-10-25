@@ -1,5 +1,5 @@
-import { line, chartEvents } from '../../src/index.js';
-import { lineChartData } from '../data/line-chart.js';
+import { line, chartEvents } from '../../src/charts/line';
+import { lineChartData } from '../data/line-chart';
 import * as d3 from 'd3';
 
 describe('line chart', () => {

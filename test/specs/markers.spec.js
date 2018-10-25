@@ -1,4 +1,4 @@
-import { markers } from '../../src/index.js';
+import markers from '../../src/plugins/markers';
 import { mouseEventData } from '../data/mouse-event.js';
 import * as d3 from 'd3';
 

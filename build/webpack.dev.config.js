@@ -4,6 +4,7 @@ var baseWebpackConfig = require('./webpack.config.js');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = merge(baseWebpackConfig, {
+  mode: 'development',
   entry: [
     './demo/index.js'
   ],

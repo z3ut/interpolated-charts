@@ -1,4 +1,4 @@
-import { verticalDivider } from '../../src/index.js';
+import verticalDivider from '../../src/plugins/vertical-divider';
 import { mouseEventData } from '../data/mouse-event.js';
 import * as d3 from 'd3';
 

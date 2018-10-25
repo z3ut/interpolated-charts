@@ -1,4 +1,4 @@
-import { colorProvider } from '../../src/utils/color-provider.js';
+import { colorProvider } from '../../src/utils/color-provider';
 
 describe('color provider', () => {
 

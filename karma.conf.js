@@ -86,7 +86,7 @@ module.exports = function(config) {
     // Check more in: https://github.com/babel/karma-babel-preprocessor
     babelPreprocessor: {
       options: {
-        presets: ['es2015']
+        presets: ['@babel/preset-env']
       }
     }
   })

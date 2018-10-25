@@ -1,4 +1,4 @@
-import { stackBar, chartEvents } from '../../src/index.js';
+import { stackBar, chartEvents } from '../../src/charts/stack-bar';
 import { stackBarMultipleData, stackBarEmptyData } from '../data/stack-bar.js';
 import * as d3 from 'd3';
 

@@ -1,10 +1,10 @@
 var path = require('path');
-var webpack = require('webpack');
 var merge = require('webpack-merge');
 var baseWebpackConfig = require('./webpack.config.js');
 var vendorsPath = path.resolve('./node_modules');
 
 module.exports = merge(baseWebpackConfig, {
+  mode: 'production',
   module: {
     rules: [
       {
@@ -27,12 +27,9 @@ module.exports = merge(baseWebpackConfig, {
   externals: {
     d3: 'd3'
   },
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      include: /\min\.js$/,
-      minimize: true
-    })
-  ],
+  optimization: {
+    minimize: true
+  },
   resolve: {
     alias: {
       d3: vendorsPath + '/d3'

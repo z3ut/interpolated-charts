@@ -1,4 +1,4 @@
-import { tooltip } from '../../src/index.js';
+import tooltip from '../../src/plugins/tooltip';
 import { mouseEventData } from '../data/mouse-event.js';
 import * as d3 from 'd3';
 

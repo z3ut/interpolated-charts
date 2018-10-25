@@ -13,6 +13,7 @@
   stroke-width: 1;
   stroke-dasharray: 4, 4;
 }
+
 .bar-chart .horizontal-grid-line {
   fill: none;
   shape-rendering: crispEdges;
@@ -44,6 +45,7 @@
 .bar {
   pointer-events: none;
 }
+
 .metadata-container .tooltip {
   fill: #FFF;
 }
@@ -94,10 +96,13 @@
   flex: 1;
   text-align: right;
 }
+
 .metadata-container .divider {
   stroke: grey;
   pointer-events: none;
 }
+
+
 
 .container {
   max-width: 1200px;
@@ -131,3 +136,4 @@ pre {
   max-width: 700px;
   margin: auto;
 }
+
